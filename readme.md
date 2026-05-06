@@ -17,11 +17,11 @@ pip install requests pdfplumber python-dotenv
 ```dotenv
 OPENROUTER_API_KEY=
 OPENROUTER_BASE=https://openrouter.ai/api/v1/chat/completions
-OPENROUTER_MODEL=deepseek/deepseek-chat
+OPENROUTER_MODEL=
 
 SUPABASE_URL=
 SUPABASE_KEY=
-SUPABASE_TABLE=jobs
+SUPABASE_TABLE=
 ```
 
 Fill in your keys — the script reads directly from this file on every run.

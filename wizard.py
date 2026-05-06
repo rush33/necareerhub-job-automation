@@ -9,6 +9,7 @@ import sys
 import json
 import subprocess
 import tempfile
+import textwrap
 from pathlib import Path
 from glob import glob
 
@@ -217,6 +218,23 @@ def main():
     if ok:
         print()
         success("Job published successfully!")
+
+    # ── Telegram notification ─────────────────
+        header("📣  Telegram Notification")
+        from job_automation import format_telegram_message, send_telegram
+
+        tg_message = format_telegram_message(payload)
+        print(f"\n{DM}  Preview:{R}\n")
+        print(textwrap.indent(tg_message, "    "))
+        print()
+
+        if confirm("Send this to Telegram?", default="y"):
+            sent = send_telegram(tg_message)
+            if sent:
+                success("Telegram message sent!")
+            else:
+                error("Telegram send failed — check logs.")
+
         if confirm("🧹  Clean up all generated files and PDFs?", default="y"):
             import glob as _glob
             to_delete = (

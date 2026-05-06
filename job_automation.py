@@ -37,13 +37,16 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────
 #  CONFIG — set via env vars or CLI args
 # ─────────────────────────────────────────────
-OPENROUTER_API_KEY = os.environ["OPENROUTER_API_KEY"]
-OPENROUTER_BASE    = os.environ["OPENROUTER_BASE"]
-OPENROUTER_MODEL   = os.environ["OPENROUTER_MODEL"]
+OPENROUTER_API_KEY = os.environ["GOOGLE_API_KEY"]
+OPENROUTER_BASE    = os.environ["GOOGLE_BASE"]
+OPENROUTER_MODEL   = os.environ["GOOGLE_MODEL"]
 
 SUPABASE_URL   = os.environ["SUPABASE_URL"]
 SUPABASE_KEY   = os.environ["SUPABASE_KEY"]
 SUPABASE_TABLE = os.environ["SUPABASE_TABLE"]
+
+GOOGLE_MODEL = os.environ["GOOGLE_MODEL"]
+GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 
 
 # ─────────────────────────────────────────────
@@ -54,18 +57,19 @@ Extract ALL of the following fields from the provided document:
 1. Post Name(s), 2. Total Vacancy, 3. Vacancy Breakdown (category/state-wise),
 4. Pay Scale (with actual salary ranges, search entire document — NEVER MISS THIS),
 5. Educational Qualification, 6. Experience Required,
-7. Age Limit (with cutoff date), 8. Age Relaxation (category-wise),
+7. Age Limit (with cutoff date), 8. Age Relaxation (category-wise) (mention if applies, important),
 9. Application Fee (search entire document — NEVER MISS THIS),
 10. Selection Process, 11. Exam Pattern, 12. Important Dates,
 13. How to Apply (steps), 14. Important Notes / hidden conditions
  
 HARD RULES:
-- NEVER skip Application Fee. If not found write: "Not mentioned"
+- NEVER skip Application Fee. If not found, set value to 0
 - NEVER skip Pay Scale / Salary. If not found, search document again to double check
 - NEVER leave Pay Level without converting to salary range
 - NEVER include serial number columns in tables
 - If data missing: write "Not mentioned"
 - Scan ENTIRE document including last pages and footnotes
+- If a section like 'Exam Pattern' is not mentioned, skip that section entirely, dont write 'Not Mentioned'
  
 OUTPUT FORMAT — use these exact ### headings:
 ### Post Name(s)
@@ -185,7 +189,7 @@ Follow these STRICT RULES for each field:
 
 SCHEMA:
 {{
-  "slug": "kebab-base-slug-no-suffix",
+  "slug": "kebab-base-slug-with-job-department-acronym-no-suffix",
   "title": "Org Recruitment Year – (Vacancy Number) Post Names (concise)",
   "advertisement_url": [{{\"url\": \"links that look like official notices/PDFs\", \"label\": \"Notice\"}}],
   "apply_url": [{{\"url\": \"links that look like apply/registration links\", \"label\": \"Apply\"}}],
@@ -200,7 +204,7 @@ SCHEMA:
   "application_fee": integer rupees (0 if free, use SC/ST fee or the least),
   "salary_min": integer monthly minimum rupees,
   "salary_max": integer monthly maximum rupees,
-  "keywords": ["array", "of", "5-7", "relevant", "lowercase", "search", "tags"],
+  "keywords": ["array", "of", "5-7", "relevant", "lowercase", "search", "tags", "and", "job department acronym"],
   "min_qualification_rank": integer rank corresponding to the min_qualification
 }}
  
@@ -232,6 +236,63 @@ def content_hash(text: str) -> str:
 
 def strip_fences(text, fence="json"):
     return re.sub(rf"```{fence}?\n?", "", text).replace("```", "").strip()
+
+def format_telegram_message(payload: dict) -> str:
+    """Use AI to format a clean Telegram message from the payload."""
+    prompt = f"""Format the following job notification into this exact structure:
+
+🔔 Recruitment Title – Total Posts
+🏢 Organization Name
+🎓 [All specific degrees in qualification]
+📅 Last Date: [Last Date in DD MonthName YYYY]
+View Full Details & Apply Here 👇
+https://necareerhub.in/job/[job-slug]
+
+Rules:
+- Keep it concise and clean
+- Extract only key info (title, org, qualification, last date)
+- Use simple qualification summary (e.g., "B.Tech/MCA", "Ph.D.", "Graduate")
+- Do not include extra details like fees, selection process, etc.
+- Maintain emojis and formatting exactly
+- Output ONLY the message, nothing else
+
+JOB DATA:
+Title: {payload.get('title')}
+Organization: {payload.get('departmentName')}
+Slug: {payload.get('slug')}
+Last Date: {payload.get('lastDate')}
+Min Qualification: {payload.get('minQualification')}
+Overview: {payload.get('overview', '')[:300]}
+"""
+    return call_deepseek(prompt, system="You are a Telegram message formatter. Output only the final message text, no explanation.")
+
+
+def send_telegram(message: str) -> bool:
+    """Send a message to Telegram channel."""
+    token   = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+
+    if not token or not chat_id:
+        logger.warning("    ⚠  TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set — skipping")
+        return False
+
+    r = requests.post(
+        f"https://api.telegram.org/bot{token}/sendMessage",
+        json={
+            "chat_id": chat_id,
+            "text": message,
+            "parse_mode": "HTML",
+            "disable_web_page_preview": False,
+        },
+        timeout=10,
+    )
+
+    if not r.ok:
+        logger.error("    Telegram error %s: %s", r.status_code, r.text)
+        return False
+
+    logger.info("    ✓ Telegram message sent")
+    return True
 
 
 # ─────────────────────────────────────────────
@@ -325,47 +386,74 @@ def fetch_url_text(url: str) -> str:
 # ─────────────────────────────────────────────
 #  AI — DeepSeek via OpenRouter (with retry)
 # ─────────────────────────────────────────────
-def call_deepseek(prompt: str, system: str = "You are a helpful assistant.", retries: int = 3) -> str:
-    if not OPENROUTER_API_KEY:
-        raise ValueError("OPENROUTER_API_KEY is not set")
+# def call_deepseek(prompt: str, system: str = "You are a helpful assistant.", retries: int = 3) -> str:
+#     if not OPENROUTER_API_KEY:
+#         raise ValueError("OPENROUTER_API_KEY is not set")
 
+#     for attempt in range(retries):
+#         try:
+#             resp = requests.post(
+#                 OPENROUTER_BASE,
+#                 headers={
+#                     "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+#                     "Content-Type": "application/json",
+#                     "HTTP-Referer": "https://necareerhub.in",
+#                     "X-Title": "NE Career Hub Job Automation",
+#                 },
+#                 json={
+#                     "model": OPENROUTER_MODEL,
+#                     "messages": [
+#                         {"role": "system", "content": system},
+#                         {"role": "user", "content": prompt},
+#                     ],
+#                     "temperature": 0.1,
+#                     "max_tokens": 8192,
+#                 },
+#                 timeout=120,
+#             )
+#             resp.raise_for_status()
+#             return resp.json()["choices"][0]["message"]["content"]
+
+#         except requests.HTTPError as e:
+#             status = e.response.status_code if e.response is not None else 0
+#             if status == 429 or status >= 500:
+#                 wait = 2 ** attempt  # 1s, 2s, 4s
+#                 logger.warning(
+#                     "    ⚠  API error (%s) on attempt %d/%d — retrying in %ds...",
+#                     status, attempt + 1, retries, wait
+#                 )
+#                 time.sleep(wait)
+#             else:
+#                 raise  # Don't retry on 4xx client errors (bad request, auth, etc.)
+
+#     raise RuntimeError(f"DeepSeek API failed after {retries} retries")
+def call_deepseek(prompt: str, system: str = "You are a helpful assistant.", retries: int = 5) -> str:
     for attempt in range(retries):
         try:
             resp = requests.post(
-                OPENROUTER_BASE,
-                headers={
-                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "https://necareerhub.in",
-                    "X-Title": "NE Career Hub Job Automation",
-                },
+                f"https://generativelanguage.googleapis.com/v1beta/models/{GOOGLE_MODEL}:generateContent?key={GOOGLE_API_KEY}",
+                headers={"Content-Type": "application/json"},
                 json={
-                    "model": OPENROUTER_MODEL,
-                    "messages": [
-                        {"role": "system", "content": system},
-                        {"role": "user", "content": prompt},
-                    ],
-                    "temperature": 0.1,
-                    "max_tokens": 8192,
+                    "system_instruction": {"parts": [{"text": system}]},
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {"temperature": 0.1, "maxOutputTokens": 8192},
                 },
                 timeout=120,
             )
             resp.raise_for_status()
-            return resp.json()["choices"][0]["message"]["content"]
+            return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
 
         except requests.HTTPError as e:
             status = e.response.status_code if e.response is not None else 0
             if status == 429 or status >= 500:
-                wait = 2 ** attempt  # 1s, 2s, 4s
-                logger.warning(
-                    "    ⚠  API error (%s) on attempt %d/%d — retrying in %ds...",
-                    status, attempt + 1, retries, wait
-                )
+                # Increased backoff: 5s, 10s, 20s, 40s, 80s
+                wait = (2 ** attempt) * 5 
+                logger.warning("    ⚠  API error (%s) on attempt %d/%d — retrying in %ds...", status, attempt + 1, retries, wait)
                 time.sleep(wait)
             else:
-                raise  # Don't retry on 4xx client errors (bad request, auth, etc.)
+                raise
 
-    raise RuntimeError(f"DeepSeek API failed after {retries} retries")
+    raise RuntimeError(f"Gemini API failed after {retries} retries")
 
 
 # ─────────────────────────────────────────────

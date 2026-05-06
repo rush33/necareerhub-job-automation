@@ -1,0 +1,101 @@
+2026-05-06 10:21:03,074 [INFO] 
+📥 Step 0: Fetching content...
+2026-05-06 10:21:03,074 [INFO]     Extracting PDF: drdo.pdf
+2026-05-06 10:21:03,253 [INFO]     ✓ Extracted 7708 chars from drdo.pdf
+2026-05-06 10:21:03,253 [INFO]     Content hash: bd51b828
+2026-05-06 10:21:03,253 [INFO] 
+🏛️  Step 1: Fetching departments from Supabase...
+2026-05-06 10:21:03,720 [INFO]     ✓ 62 departments loaded
+2026-05-06 10:21:03,720 [INFO] 
+🤖 Step 2: Extracting job details via LLM...
+2026-05-06 10:21:21,959 [INFO]     ✓ Extracted 3156 chars
+2026-05-06 10:21:21,959 [INFO] 
+🏛️  Step 3: Matching department...
+2026-05-06 10:21:21,960 [INFO]     Org detected: Apprenticeship Training for:
+2026-05-06 10:21:23,695 [WARNING]     ⚠  No existing dept match — suggested: Apprenticeship Training
+2026-05-06 10:21:23,695 [INFO] 
+🧱 Step 4: Generating TipTap HTML...
+2026-05-06 10:21:29,228 [INFO]     ✓ HTML generated (6046 chars)
+2026-05-06 10:21:29,229 [INFO] 
+🗂️  Step 5: Building JSON payload...
+2026-05-06 10:21:50,467 [INFO]     ✓ Payload built — title: NSTL Recruitment 2026 – 42 Apprentice Posts
+2026-05-06 10:21:50,467 [INFO] 
+🔍 Step 5b: Validating payload...
+2026-05-06 10:21:50,468 [INFO]     ✓ Payload validation passed
+2026-05-06 10:21:50,469 [INFO] 
+✅ Outputs saved:
+2026-05-06 10:21:50,469 [INFO]    HTML   → description_20260506_102103.html
+2026-05-06 10:21:50,469 [INFO]    JSON   → payload_20260506_102103.json
+2026-05-06 10:21:50,469 [INFO]    Debug  → debug_20260506_102103/
+2026-05-06 10:21:50,470 [INFO] 
+⚡ Dry run — outputs saved for review. Add --publish to push to Supabase.
+2026-05-06 10:29:50,714 [INFO]     ✓ Payload validation passed
+2026-05-06 10:29:51,412 [INFO] ✓ Published! ID: 8899ab88-af33-4f92-a670-3f5ff0cce2b0 · Slug: drdo-nstl-apprenticeship-recruitment-2026-bd51b828
+2026-05-06 13:50:23,517 [INFO] 
+📥 Step 0: Fetching content...
+2026-05-06 13:50:23,517 [INFO]     Extracting PDF: tura.pdf
+2026-05-06 13:50:24,095 [INFO]     ✓ Extracted 26106 chars from tura.pdf
+2026-05-06 13:50:24,096 [INFO]     Content hash: 8c3694b7
+2026-05-06 13:50:24,096 [INFO] 
+🏛️  Step 1: Fetching departments from Supabase...
+2026-05-06 13:50:24,603 [INFO]     ✓ 62 departments loaded
+2026-05-06 13:50:24,603 [INFO] 
+🤖 Step 2: Extracting job details via LLM...
+2026-05-06 13:50:29,530 [INFO]     ✓ Extracted 3208 chars
+2026-05-06 13:50:29,531 [INFO] 
+🏛️  Step 3: Matching department...
+2026-05-06 13:50:29,532 [INFO]     Org detected: Professor
+2026-05-06 13:50:31,202 [WARNING]     ⚠  No existing dept match — suggested: Professor
+2026-05-06 13:50:31,202 [INFO] 
+🧱 Step 4: Generating TipTap HTML...
+2026-05-06 13:50:37,957 [INFO]     ✓ HTML generated (6612 chars)
+2026-05-06 13:50:37,959 [INFO] 
+🗂️  Step 5: Building JSON payload...
+2026-05-06 13:50:41,770 [INFO]     ✓ Payload built — title: Meghalaya Health Recruitment 2026 – 59 Faculty Posts
+2026-05-06 13:50:41,770 [INFO] 
+🔍 Step 5b: Validating payload...
+2026-05-06 13:50:41,770 [INFO]     ✓ Payload validation passed
+2026-05-06 13:50:41,772 [INFO] 
+✅ Outputs saved:
+2026-05-06 13:50:41,772 [INFO]    HTML   → description_20260506_135023.html
+2026-05-06 13:50:41,772 [INFO]    JSON   → payload_20260506_135023.json
+2026-05-06 13:50:41,772 [INFO]    Debug  → debug_20260506_135023/
+2026-05-06 13:50:41,773 [INFO] 
+⚡ Dry run — outputs saved for review. Add --publish to push to Supabase.
+2026-05-06 13:51:40,312 [INFO]     ✓ Payload validation passed
+2026-05-06 13:51:40,834 [INFO] ✓ Published! ID: 220c7057-4cb0-41ee-a2e7-2ee3aad0fa3e · Slug: tura-medical-college-recruitment-2026-faculty-8c3694b7
+2026-05-06 13:51:50,867 [INFO]     ✓ Telegram message sent
+2026-05-06 18:53:40,996 [INFO] 
+📥 Step 0: Fetching content...
+2026-05-06 18:53:40,996 [INFO]     Extracting PDF: apsc.pdf
+2026-05-06 18:53:41,729 [INFO]     ✓ Extracted 27942 chars from apsc.pdf
+2026-05-06 18:53:41,729 [INFO]     Content hash: 72fc423c
+2026-05-06 18:53:41,730 [INFO] 
+🏛️  Step 1: Fetching departments from Supabase...
+2026-05-06 18:53:42,534 [INFO]     ✓ 62 departments loaded
+2026-05-06 18:53:42,534 [INFO] 
+🤖 Step 2: Extracting job details via LLM...
+2026-05-06 18:55:03,124 [INFO]     ✓ Extracted 3169 chars
+2026-05-06 18:55:03,125 [INFO] 
+🏛️  Step 3: Matching department...
+2026-05-06 18:55:03,126 [INFO]     Org detected: Class-I (Junior Grade) Home Guards in Assam Home Guards Services
+2026-05-06 18:55:14,596 [WARNING]     ⚠  No existing dept match — suggested: Assam Home Guards Services
+2026-05-06 18:55:14,596 [INFO] 
+🧱 Step 4: Generating TipTap HTML...
+2026-05-06 18:55:56,577 [INFO]     ✓ HTML generated (8551 chars)
+2026-05-06 18:55:56,577 [INFO] 
+🗂️  Step 5: Building JSON payload...
+2026-05-06 18:56:22,487 [INFO]     ✓ Payload built — title: APSC Recruitment 2026 – 22 Home Guard Posts
+2026-05-06 18:56:22,488 [INFO] 
+🔍 Step 5b: Validating payload...
+2026-05-06 18:56:22,488 [INFO]     ✓ Payload validation passed
+2026-05-06 18:56:22,490 [INFO] 
+✅ Outputs saved:
+2026-05-06 18:56:22,490 [INFO]    HTML   → description_20260506_185340.html
+2026-05-06 18:56:22,490 [INFO]    JSON   → payload_20260506_185340.json
+2026-05-06 18:56:22,490 [INFO]    Debug  → debug_20260506_185340/
+2026-05-06 18:56:22,490 [INFO] 
+⚡ Dry run — outputs saved for review. Add --publish to push to Supabase.
+2026-05-06 18:57:21,799 [INFO]     ✓ Payload validation passed
+2026-05-06 18:57:22,287 [INFO] ✓ Published! ID: 271f8f35-56c9-48ce-b96b-3dae561e3bba · Slug: apsc-recruitment-2026-home-guards-72fc423c
+2026-05-06 18:57:22,813 [WARNING]     ⚠  API error (503) on attempt 1/5 — retrying in 5s...
