@@ -102,6 +102,7 @@ STRICT RULES:
     </tr>
   </tbody>
 </table>
+- Important Dates section must be a table
 - ALL <th> tags MUST have `class="bg-default-100 border border-divider p-2 font-bold text-left" colspan="1" rowspan="1"`
 - ALL <td> tags MUST have `class="border border-divider p-2 relative" colspan="1" rowspan="1"`
 - Wrap ALL cell content in <p> tags
@@ -199,7 +200,7 @@ SCHEMA:
   "source_website": "best guess from links or org website",
   "department_id": "matched dept id from list OR null if no match",
   "min_qualification": "one of: 8th_pass,10th_pass,12th_pass,iti,diploma,graduate,post_graduate,engineering,medical or 'all'",
-  "state": "one of: assam,arunachal,meghalaya,nagaland,manipur,mizoram,tripura,sikkim or 'all' for central govt",
+  "state": "one of: assam,arunachal-pradesh,meghalaya,nagaland,manipur,mizoram,tripura,sikkim or 'all' for central govt",
   "sub_category": "one of: psu,railway,defence,banking,teaching,police,engineering,medical,clerical,postal,administrative,upsc_ssc,judiciary,non_technical,research,healthcare,sports",
   "application_fee": integer rupees (0 if free, use SC/ST fee or the least),
   "salary_min": integer monthly minimum rupees,
@@ -244,7 +245,7 @@ def format_telegram_message(payload: dict) -> str:
 🔔 Recruitment Title – Total Posts
 🏢 Organization Name
 🎓 [All specific degrees in qualification]
-📅 Last Date: [Last Date in DD MonthName YYYY]
+📅 Last Date: [Last Date in DD Month YYYY]
 View Full Details & Apply Here 👇
 https://necareerhub.in/job/[job-slug]
 
@@ -260,8 +261,8 @@ JOB DATA:
 Title: {payload.get('title')}
 Organization: {payload.get('departmentName')}
 Slug: {payload.get('slug')}
-Last Date: {payload.get('lastDate')}
-Min Qualification: {payload.get('minQualification')}
+Last Date: {payload.get('last_date')}
+Min Qualification: {payload.get('min_qualification')}
 Overview: {payload.get('overview', '')[:300]}
 """
     return call_deepseek(prompt, system="You are a Telegram message formatter. Output only the final message text, no explanation.")
@@ -645,10 +646,8 @@ def run_pipeline(
         raise ValueError(f"DeepSeek returned invalid JSON: {e}\n\nRaw:\n{json_clean[:500]}")
 
     # Merge dept info
-    if resolved_dept:
-        payload["departmentName"] = resolved_dept["name"]
-        payload["departmentLogo"] = resolved_dept.get("image_url")
-        payload["departmentId"]   = resolved_dept["id"]
+    # if resolved_dept:
+        # payload["departmentId"]   = resolved_dept["id"]
 
     # Slug: use content hash suffix for idempotency (consistent across re-runs)
     if payload.get("slug"):
@@ -700,6 +699,20 @@ def run_pipeline(
                 )
 
     return payload
+
+def revalidate_necareerhub(state: str, qualification: str):
+    url = "https://necareerhub.in/api/revalidate"
+    secret = os.environ["REVALIDATE_SECRET"]
+    
+    paths = [
+        f"/{state}/govt-jobs",
+        f"/{state}/govt-jobs/{qualification}",
+        "/",
+    ]
+    
+    for path in paths:
+        requests.post(url, json={"path": path, "secret": secret})
+
 
 
 # ─────────────────────────────────────────────
