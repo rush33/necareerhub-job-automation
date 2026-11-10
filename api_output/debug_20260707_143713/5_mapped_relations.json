@@ -1,0 +1,127 @@
+{
+  "department_id": "ed52aaf9-4ce5-4441-9574-ec9d87e15728",
+  "sector_id": 6,
+  "state_id": null,
+  "eligibility_criteria": [
+    {
+      "group_id": 1,
+      "requirements": [
+        {
+          "qualification_level_id": 1,
+          "degree_id": 3,
+          "specialization_id": 3,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 2,
+      "requirements": [
+        {
+          "qualification_level_id": 3,
+          "degree_id": 6,
+          "specialization_id": 29,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 3,
+      "requirements": [
+        {
+          "qualification_level_id": 3,
+          "degree_id": 6,
+          "specialization_id": 28,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 4,
+      "requirements": [
+        {
+          "qualification_level_id": 3,
+          "degree_id": 6,
+          "specialization_id": 30,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 5,
+      "requirements": [
+        {
+          "qualification_level_id": 3,
+          "degree_id": 6,
+          "specialization_id": 34,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 6,
+      "requirements": [
+        {
+          "qualification_level_id": 3,
+          "degree_id": 6,
+          "specialization_id": 53,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 7,
+      "requirements": [
+        {
+          "qualification_level_id": 3,
+          "degree_id": 6,
+          "specialization_id": 16,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 8,
+      "requirements": [
+        {
+          "qualification_level_id": 3,
+          "degree_id": 6,
+          "specialization_id": 54,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 9,
+      "requirements": [
+        {
+          "qualification_level_id": 2,
+          "degree_id": 5,
+          "specialization_id": 81,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 10,
+      "requirements": [
+        {
+          "qualification_level_id": 1,
+          "degree_id": 3,
+          "specialization_id": 1,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    }
+  ]
+}

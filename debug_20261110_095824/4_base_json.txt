@@ -1,0 +1,21 @@
+{
+  "slug": "bel-recruitment-2026-probationary-engineer",
+  "title": "BEL Recruitment 2026 – Probationary Engineer Posts",
+  "category": "public-sector",
+  "overview": "Bharat Electronics Limited (BEL) has released an official notification for recruitment to the posts of Probationary Engineer in Electronics and Mechanical disciplines. Interested and eligible candidates can apply online through the provided application link before the stipulated deadline. The recruitment process includes essential eligibility criteria regarding engineering degrees and age limits.",
+  "last_date": "2026-11-15T18:29:59+00:00",
+  "source_website": "https://bel-india.in",
+  "application_fee": 500,
+  "salary_min": 40000,
+  "salary_max": 140000,
+  "age_min": 21,
+  "age_max_gen": 28,
+  "keywords": ["bel", "bharat electronics", "probationary engineer", "engineering jobs", "public sector", "government jobs"],
+  "advertisement_url": [{"url": "https://bel-india.in/wp-content/uploads/2026/10/External-Ad-2026-English-1.pdf", "label": "Notice"}],
+  "apply_url": [{"url": "https://g06.tcsion.com/EForms/configuredHtml/33192/103061/uPVtXzjwivanf3RWlN/Index.html", "label": "Apply"}],
+  "raw_post_names": "Probationary Engineer (Electronics) in E-II Grade, Probationary Engineer (Mechanical) in E-II Grade",
+  "raw_department_text": "Bharat Electronics Limited (BEL)",
+  "raw_sector_text": "Public Sector Undertaking",
+  "raw_state_text": "All India",
+  "raw_eligibility_text": "Candidates must possess a First Class B.E./B.Tech/B.Sc Engineering degree in relevant disciplines (Electronics / Mechanical) from a recognized University/Institution. Age limit is 28 years for General category candidates as on the crucial date, with relaxation applicable for reserved categories as per government rules."
+}

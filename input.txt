@@ -1,0 +1,690 @@
+<h3>Post Name(s)</h3>
+<ul>
+  <li><p><strong>Warrant Officer</strong> (Cipher)</p></li>
+  <li><p><strong>Warrant Officer</strong> (Draughtsman)</p></li>
+  <li><p><strong>Warrant Officer</strong> (Operation Theatre Technician)</p></li>
+  <li><p><strong>Warrant Officer</strong> (Physiotherapist)</p></li>
+  <li><p><strong>Havildar</strong> (Instrument Mechanic)</p></li>
+  <li><p><strong>Rifleman</strong> (Electrical Fitter Signal)</p></li>
+  <li><p><strong>Rifleman</strong> (Lineman Field)</p></li>
+  <li><p><strong>Rifleman</strong> (Armourer)</p></li>
+  <li><p><strong>Rifleman</strong> (Engineer Equipment Mechanic)</p></li>
+  <li><p><strong>Rifleman</strong> (Recovery Vehicle Mechanic)</p></li>
+  <li><p><strong>Rifleman</strong> (Electrician Motor Vehicle)</p></li>
+  <li><p><strong>Rifleman</strong> (Metalsmith)</p></li>
+  <li><p><strong>Rifleman</strong> (Upholster)</p></li>
+  <li><p><strong>Rifleman Store Keeper Technical</strong> (Electrical Mechanical Engineer)</p></li>
+  <li><p><strong>Rifleman</strong> (Vehicle Mechanic)</p></li>
+  <li><p><strong>Rifleman</strong> (Welder)</p></li>
+  <li><p><strong>Rifleman</strong> (Mason)</p></li>
+</ul>
+
+<hr><h3>Recruitment Highlights</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Particular</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Details</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Organisation</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Assam Rifles</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Recruitment</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Technical and Tradesman Recruitment Rally 2026</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Total Vacancies</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>354 across 17 trades</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Eligible Gender</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Male candidates</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Age Limit</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years (most trades); 18–25 years (Warrant Officer posts)</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Application Fee</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>₹100 (General/OBC/EWS); SC/ST/Ex-Servicemen exempted</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Last Date</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>28 October 2026 (23:59 hrs)</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>PST/PET Centres</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Jorhat (Assam) or Diphu (Assam)</p></td>
+    </tr>
+  </tbody>
+</table>
+<p>Explore more government job updates on <a href="https://necareerhub.in">NE Career Hub</a>.</p>
+
+<hr><h3>Vacancy Details</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Trade</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>SC</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>ST</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>OBC</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>EWS</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>UR</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Total</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Warrant Officer (Cipher)</p></td>
+      <td class="border border-divider p-2 relative"><p>19</p></td>
+      <td class="border border-divider p-2 relative"><p>9</p></td>
+      <td class="border border-divider p-2 relative"><p>33</p></td>
+      <td class="border border-divider p-2 relative"><p>12</p></td>
+      <td class="border border-divider p-2 relative"><p>51</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>124</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Warrant Officer (Draughtsman)</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>2</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Warrant Officer (Operation Theatre Technician)</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>1</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Warrant Officer (Physiotherapist)</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>2</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Havildar (Instrument Mechanic)</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>6</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Electrical Fitter Signal)</p></td>
+      <td class="border border-divider p-2 relative"><p>5</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>9</p></td>
+      <td class="border border-divider p-2 relative"><p>3</p></td>
+      <td class="border border-divider p-2 relative"><p>13</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>32</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Lineman Field)</p></td>
+      <td class="border border-divider p-2 relative"><p>3</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>6</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>8</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>21</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Armourer)</p></td>
+      <td class="border border-divider p-2 relative"><p>4</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>8</p></td>
+      <td class="border border-divider p-2 relative"><p>3</p></td>
+      <td class="border border-divider p-2 relative"><p>12</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>29</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Engineer Equipment Mechanic)</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>4</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>10</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Recovery Vehicle Mechanic)</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>4</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>5</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>13</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Electrician Motor Vehicle)</p></td>
+      <td class="border border-divider p-2 relative"><p>3</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>6</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>9</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>22</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Metalsmith)</p></td>
+      <td class="border border-divider p-2 relative"><p>3</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>5</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>8</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>19</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Upholster)</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>3</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman Store Keeper Technical (Electrical Mechanical Engineer)</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>4</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>7</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>16</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Vehicle Mechanic)</p></td>
+      <td class="border border-divider p-2 relative"><p>4</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>6</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>9</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>23</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Welder)</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p>0</p></td>
+      <td class="border border-divider p-2 relative"><p>1</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>2</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rifleman (Mason)</p></td>
+      <td class="border border-divider p-2 relative"><p>4</p></td>
+      <td class="border border-divider p-2 relative"><p>2</p></td>
+      <td class="border border-divider p-2 relative"><p>8</p></td>
+      <td class="border border-divider p-2 relative"><p>3</p></td>
+      <td class="border border-divider p-2 relative"><p>12</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>29</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Total</strong></p></td>
+      <td class="border border-divider p-2 relative" colspan="5"><p></p></td>
+      <td class="border border-divider p-2 relative"><p><strong>354</strong></p></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr><h3>Educational Qualification &amp; Experience (Trade-Wise)</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Post</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Educational / Technical Qualification</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Experience</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Age</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Warrant Officer (Cipher)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10+2 (Science with Physics, Mathematics and English) from a recognised Board and 2-year ITI in a relevant field such as ICT, Information Technology, Electronics Engineering, Computer Science, Computer Engineering, Electrical Engineering or Instrumental Technology (NSQF Level 4 or above); <strong>OR</strong> Bachelor's Degree in Electronics or Information &amp; Communication Technology.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–25 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Warrant Officer (Draughtsman)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10+2 or equivalent from a recognised Board with a 3-year Diploma in Architectural Assistantship from a recognised Polytechnic College/Institution.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–25 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Warrant Officer (Operation Theatre Technician)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10+2 from a recognised Board and a 2-year Diploma in Operation Theatre Technology from a recognised institute/hospital.</p></td>
+      <td class="border border-divider p-2 relative"><p>Minimum 1 year as an Operation Theatre Technician in a 50-bedded hospital recognised by the Central/State Government</p></td>
+      <td class="border border-divider p-2 relative"><p>18–25 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Warrant Officer (Physiotherapist)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10+2 from a recognised Board and a 2-year Diploma in Physiotherapy from a recognised institute/hospital.</p></td>
+      <td class="border border-divider p-2 relative"><p>Minimum 1 year as a Physiotherapist in a 50-bedded hospital/physiotherapy centre recognised by the Central/State Government</p></td>
+      <td class="border border-divider p-2 relative"><p>18–25 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Havildar (Instrument Mechanic)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or minimum 2/3-year Diploma in Instrument Mechanic, Technology Electronic Mechanic or related technical fields prescribed in Appendix-A.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Electrical Fitter Signal)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or 2/3-year Diploma in the relevant electrical/electronic fields prescribed in Appendix-A.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Lineman Field)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or 2/3-year Diploma in the relevant electronics/electrical/communication fields prescribed in Appendix-A.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Armourer)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th pass with an ITI certificate in Welding trade from a recognised institute.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Engineer Equipment Mechanic)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or minimum 2/3-year Diploma in Engineer Equipment Mechanic, Power Electrical Systems, Mechanic Diesel or related fields prescribed in Appendix-A.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Recovery Vehicle Mechanic)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI certificate in Recovery Vehicle Mechanic and a valid Heavy Motor Vehicle/Transport Vehicle Driving Licence; <strong>OR</strong> 10th/Matriculation pass with a valid Heavy Motor Vehicle/Transport Vehicle Driving Licence.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Electrician Motor Vehicle)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or minimum 2/3-year Diploma in the relevant electrician, electrical, technical or power-electronics fields prescribed in Appendix-A.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Metalsmith)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or minimum 2/3-year Diploma in Metalsmith/Metallurgy.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Upholster)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or minimum 2/3-year Diploma in Upholster trade.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman Store Keeper Technical</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass from a recognised Board.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Vehicle Mechanic)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or minimum 2/3-year Diploma in Mechanic Motor Vehicle, Mechanic Diesel Fitter, Automobile Engineering or related technical fields prescribed in Appendix-A.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Welder)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th/Matriculation pass with 2-year ITI or minimum 2/3-year Diploma in Welder/Metallurgy.</p></td>
+      <td class="border border-divider p-2 relative"><p>Not required</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (Mason)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>10th pass and qualification in the trade test.</p></td>
+      <td class="border border-divider p-2 relative"><p>1 year of work experience in the trade (undertaking/self-certification required)</p></td>
+      <td class="border border-divider p-2 relative"><p>18–23 years</p></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr><h3>Important Dates</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Event</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Date</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Online Application Starts</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>28 September 2026</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Last Date to Apply</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>28 October 2026</strong> (23:59 hrs)</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Rally Date</p></td>
+      <td class="border border-divider p-2 relative"><p>Tentatively from <strong>23 November 2026</strong> onwards</p></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr><h3>Who Should Apply</h3>
+<ul>
+  <li><p><strong>Eligible gender:</strong> Male candidates meeting the trade-wise educational and technical qualification requirements.</p></li>
+  <li><p><strong>Application readiness:</strong> Candidates who can complete the online application before the deadline.</p></li>
+  <li><p><strong>Certificates:</strong> Candidates who hold a valid Domicile/PRC and the applicable category certificates.</p></li>
+</ul>
+
+<hr><h3>Age Limit</h3>
+<p>Age is calculated as on <strong>01 July 2026</strong>.</p>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Posts</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Age Range</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Most Trades</p></td>
+      <td class="border border-divider p-2 relative"><p>18 to <strong>23 years</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Warrant Officer (Cipher, Draughtsman, OT Technician, Physiotherapist)</p></td>
+      <td class="border border-divider p-2 relative"><p>18 to <strong>25 years</strong></p></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr><h3>Age Relaxation</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Category</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Relaxation</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>SC/ST</p></td>
+      <td class="border border-divider p-2 relative"><p>5 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>OBC</p></td>
+      <td class="border border-divider p-2 relative"><p>3 years</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Ex-Servicemen (UR)</p></td>
+      <td class="border border-divider p-2 relative"><p>3 years (after deduction of military service)</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Ex-Servicemen (OBC)</p></td>
+      <td class="border border-divider p-2 relative"><p>6 years (3+3) (after deduction of military service)</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Ex-Servicemen (SC/ST)</p></td>
+      <td class="border border-divider p-2 relative"><p>8 years (3+5) (after deduction of military service)</p></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr><h3>Application Fee</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Category</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Fee</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>General/OBC/EWS</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>₹100</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>SC/ST/Ex-Servicemen</p></td>
+      <td class="border border-divider p-2 relative"><p>Exempted</p></td>
+    </tr>
+  </tbody>
+</table>
+
+
+<hr><h3>Physical Standard Test (PST)</h3>
+<p>The notification prescribes the following minimum physical standards. Weight must be proportionate to height and age as per medical standards.</p>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Category / Region</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Male Height</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Female Height</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Chest Normal</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Chest Expanded</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Weight</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>All India</strong>, except the categories listed below</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>170 cm</strong></p></td>
+      <td class="border border-divider p-2 relative"><p><strong>157 cm</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>80 cm</p></td>
+      <td class="border border-divider p-2 relative"><p>85 cm</p></td>
+      <td class="border border-divider p-2 relative"><p>Proportionate to height and age</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Garhwalis, Kumaonis, Dogras, Marathas</strong> and candidates from <strong>Assam, Nagaland, Manipur, Mizoram, Tripura, Arunachal Pradesh, Meghalaya, Himachal Pradesh, Kashmir, Leh and Ladakh divisions of Jammu &amp; Kashmir</strong></p></td>
+      <td class="border border-divider p-2 relative"><p><strong>165 cm</strong></p></td>
+      <td class="border border-divider p-2 relative"><p><strong>155 cm</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>78 cm</p></td>
+      <td class="border border-divider p-2 relative"><p>83 cm</p></td>
+      <td class="border border-divider p-2 relative"><p>Proportionate to height and age</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Scheduled Tribe (ST)</strong> candidates</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>162.5 cm</strong></p></td>
+      <td class="border border-divider p-2 relative"><p><strong>150 cm</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>76 cm</p></td>
+      <td class="border border-divider p-2 relative"><p>81 cm</p></td>
+      <td class="border border-divider p-2 relative"><p>Proportionate to height and age</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Important:</strong> Assam is included in the reduced-height category, so eligible candidates from Assam are subject to the 165 cm (male) standard, unless they qualify for the separate ST standard.</p>
+
+<hr><h3>Physical Efficiency Test (PET)</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Region</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Candidate</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Running Requirement</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Qualifying Time</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>All India except Ladakh Region</p></td>
+      <td class="border border-divider p-2 relative"><p>Male</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>5 km run</strong></p></td>
+      <td class="border border-divider p-2 relative"><p><strong>24 minutes</strong></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Ladakh Region only</p></td>
+      <td class="border border-divider p-2 relative"><p>Male</p></td>
+      <td class="border border-divider p-2 relative"><p><strong>1.6 km run</strong></p></td>
+      <td class="border border-divider p-2 relative"><p><strong>7 minutes</strong></p></td>
+    </tr>
+  </tbody>
+</table>
+<p>The RFID-based PST/PET will be conducted at <strong>Jorhat (Assam)</strong> or <strong>Diphu (Assam)</strong>. The reporting date will be communicated through the official Assam Rifles website.</p>
+
+<hr><h3>Selection Process</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Stage</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Details</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>1. Initial Document Verification</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Verification of required original documents before or at the physical testing stage.</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>2. RFID-Based PST</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Physical measurements including height and chest.</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>3. RFID-Based PET</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>5 km run in 24 minutes (1.6 km in 7 minutes for Ladakh-region male candidates).</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>4. Computer Based Test (CBT)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>100 marks. Minimum qualifying marks: <strong>35%</strong> for General/EWS and <strong>33%</strong> for SC/ST/OBC.</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>5. Trade Skill Test</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Computer test and practical skill test. This stage is qualifying in nature and carries no marks. Candidates are shortlisted at about <strong>1:4</strong> against vacancies in each trade/category.</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>6. Document Verification (DV)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Verification of original educational, domicile, category, payment and other required certificates.</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>7. Detailed Medical Examination (DME)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Medical examination under the applicable CAPF/Assam Rifles recruitment guidelines.</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>8. Review Medical Examination (RME)</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Review examination for candidates declared medically unfit in DME, as per applicable instructions.</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>9. Merit List / Enrolment</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Final selection is based on merit and trade/category-wise vacancies. Qualifying all tests does not guarantee final selection.</p></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr><h3>Pay Scale</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Rank</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Pay Level</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Pay Scale</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Indicative Gross</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Rifleman (GD) / Constable</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Level 3</p></td>
+      <td class="border border-divider p-2 relative"><p>₹21,700 – ₹69,100 (Basic Pay ₹21,700)</p></td>
+      <td class="border border-divider p-2 relative"><p>Around ₹48,000–₹51,000 per month including allowances</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Havildar</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Level 5</p></td>
+      <td class="border border-divider p-2 relative"><p>₹29,200 – ₹92,300</p></td>
+      <td class="border border-divider p-2 relative"><p>—</p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p><strong>Warrant Officer</strong></p></td>
+      <td class="border border-divider p-2 relative"><p>Level 6</p></td>
+      <td class="border border-divider p-2 relative"><p>₹35,400 – ₹1,12,400</p></td>
+      <td class="border border-divider p-2 relative"><p>—</p></td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Major Allowances &amp; Benefits</h4>
+<ul>
+  <li><p><strong>Dearness Allowance (DA)</strong></p></li>
+  <li><p><strong>House Rent Allowance (HRA)</strong></p></li>
+  <li><p><strong>Transport Allowance (TA)</strong></p></li>
+  <li><p><strong>Ration Money Allowance</strong></p></li>
+  <li><p><strong>Hardship &amp; Risk Allowances</strong> depending on the operational/posting area</p></li>
+</ul>
+<p><strong>Important:</strong> The notification states that the pay scale and allowances will be as applicable to Assam Rifles personnel. The rank-wise figures above are supplementary salary information and are not printed in the notification. Salary references: <a href="https://netsalary.in/assam-rifles-salary/">NetSalary</a>, <a href="https://www.pw.live/ssc/exams/ssc-gd-assam-rifles-constable-salary">PW</a>, <a href="https://www.indianpaycalculator.in/capf/assam-rifles">Indian Pay Calculator</a>, <a href="https://bharatgeek.com/salary/in/assam/assam-rifles">BharatGeek</a> and <a href="https://jobs.obcrights.org/Blogs/assam-rifles-recruitment-eligibility-age-salary-application-details/">OBC Rights</a>.</p>
+
+<hr><h3>Documents Required</h3>
+<ul>
+  <li><p>Printed copy of the online application form</p></li>
+  <li><p>Copy of the notification</p></li>
+  <li><p>Original payment receipt/challan</p></li>
+  <li><p>Domicile/Permanent Resident Certificate (PRC)</p></li>
+  <li><p>Matriculation/Secondary Examination Certificate (for date of birth and name)</p></li>
+  <li><p>Educational/technical qualification certificates</p></li>
+  <li><p>SC/ST/OBC/EWS certificate (if applicable)</p></li>
+  <li><p>Valid Heavy Motor Vehicle Licence (for Recovery Vehicle Mechanic)</p></li>
+  <li><p>NOC (for departmental candidates)</p></li>
+</ul>
+
+<hr><h3>How to Apply</h3>
+<ol>
+  <li><p>Visit <a href="https://necareerhub.in">NE Career Hub</a> and open this recruitment listing to reach the application link.</p></li>
+  <li><p>Select the online application option and fill in all details accurately.</p></li>
+  <li><p>Pay the application fee online or through an SBI Bank counter (not applicable for exempted categories).</p></li>
+  <li><p>Upload the payment receipt/challan.</p></li>
+  <li><p>Submit the form and keep a printed copy for the rally.</p></li>
+</ol>
+<p>Browse more <a href="https://necareerhub.in">government job notifications</a> on NE Career Hub to stay ahead of upcoming deadlines.</p>
+
+<hr><h3>Important Recruitment Conditions</h3>
+<ul>
+  <li><p><strong>No state-wise quota:</strong> Vacancies are earmarked on an all-India, all-class basis. Valid Domicile/PRC and category certificates are required.</p></li>
+  <li><p><strong>Single application:</strong> Multiple applications are not accepted.</p></li>
+  <li><p><strong>No change of category or trade:</strong> Changes are not entertained during the recruitment rally.</p></li>
+  <li><p><strong>No corrections:</strong> No change or modification is allowed after the online application is submitted.</p></li>
+  <li><p><strong>Electronic gadgets prohibited:</strong> Mobile phones and other electronic gadgets are banned at rally/test premises.</p></li>
+  <li><p><strong>PwD candidates:</strong> Candidates in the physically handicapped category are not eligible for this recruitment.</p></li>
+  <li><p><strong>ESM reservation:</strong> 10% of vacancies are earmarked for Ex-Servicemen in the specified trades, subject to the applicable conditions.</p></li>
+  <li><p><strong>Communication:</strong> Information is sent through Email/SMS. Candidates must provide a working email ID and mobile number.</p></li>
+  <li><p><strong>TA/DA:</strong> No Travelling Allowance or Daily Allowance is admissible for any recruitment stage.</p></li>
+  <li><p><strong>Probation:</strong> Selected candidates will be on probation for two years.</p></li>
+  <li><p><strong>Training recovery:</strong> Candidates who withdraw from training or resign prematurely may be required to refund the training cost or three months' pay and allowances, as stated in the notification.</p></li>
+  <li><p><strong>Compassionate appointment:</strong> The compassionate ground appointment scheme is not applicable to this rally.</p></li>
+</ul>
+
+<hr><h3>Recruitment Centres, Helpline &amp; Reporting</h3>
+<ul>
+  <li><p><strong>RFID PST/PET centres:</strong> Jorhat (Assam) or Diphu (Assam)</p></li>
+  <li><p><strong>Reporting date:</strong> To be communicated through the official Assam Rifles website</p></li>
+  <li><p><strong>Helpline numbers:</strong> 0364-2585118, 0364-2585119, 8794101693</p></li>
+  <li><p><strong>Helpline hours:</strong> 0900 hrs to 1730 hrs on working days</p></li>
+</ul>
+
+<hr><h3>Why This Matters for NE Applicants</h3>
+<ul>
+  <li><p><strong>Regional significance:</strong> Assam Rifles is a premier paramilitary force with deep historical and operational roots in the North East, making this a significant career opportunity for local youth.</p></li>
+  <li><p><strong>Convenient venues:</strong> The rally is held within the region (Jorhat/Diphu), reducing travel burden for candidates from the seven sister states.</p></li>
+</ul>
+
+<hr><h3>Important Links</h3>
+<table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
+  <tbody>
+    <tr>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Link</p></th>
+      <th class="bg-default-100 border border-divider p-2 font-bold text-left"><p>Action</p></th>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Apply Online</p></td>
+      <td class="border border-divider p-2 relative"><p><a href="https://necareerhub.in">Apply Now</a></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Assam Rifles Official Website</p></td>
+      <td class="border border-divider p-2 relative"><p><a href="https://www.assamrifles.gov.in">Visit Website</a></p></td>
+    </tr>
+    <tr>
+      <td class="border border-divider p-2 relative"><p>Join WhatsApp Channel for Updates</p></td>
+      <td class="border border-divider p-2 relative"><p><a href="https://whatsapp.com/channel/0029Vb7ARpvKrWR3oh1XiW1Q">Join Now</a></p></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr><h3>Frequently Asked Questions (FAQs)</h3>
+<p><strong>Q: What is the last date to apply?</strong></p>
+<p>A: The last date to apply online is 28 October 2026 (23:59 hrs).</p>
+<p><strong>Q: Is there any state-wise quota for these vacancies?</strong></p>
+<p>A: No. Vacancies are earmarked on an all-India, all-class basis.</p>
+<p><strong>Q: Can I change my category or trade after submitting the application?</strong></p>
+<p>A: No. Changes to category or trade are not permitted once the application is submitted.</p>
+<p><strong>Q: What is the minimum height for candidates from Assam?</strong></p>
+<p>A: The minimum height is 165 cm for male candidates, unless the candidate qualifies under the ST standard.</p>
+<p><strong>Q: What is the minimum physical standard for ST candidates?</strong></p>
+<p>A: The minimum height for ST candidates is 162.5 cm (male) and 150 cm (female).</p>
+<p><strong>Q: Are female candidates eligible for these posts?</strong></p>
+<p>A: The notification specifies that these posts are for male candidates only.</p>
+
+<hr><h3>Source &amp; Accuracy Note</h3>
+<p>The physical standards, PET requirements, CBT qualifying marks, trade-wise qualifications, age limits and recruitment conditions on this page are based on the Assam Rifles Technical and Tradesman Recruitment Rally 2026 notification. The rank-wise salary figures are supplementary and are not printed in the notification. Candidates are advised to verify all details against the official notification before applying.</p>

@@ -1,0 +1,66 @@
+{
+  "department_id": null,
+  "sector_id": 3,
+  "state_id": null,
+  "eligibility_criteria": [
+    {
+      "group_id": 1,
+      "role_name": "Probationary Engineer (Electronics) in E-II Grade",
+      "requirements": [
+        {
+          "qualification_level_id": 4,
+          "degree_id": 16,
+          "specialization_id": 30,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 2,
+      "role_name": "Probationary Engineer (Electronics) in E-II Grade",
+      "requirements": [
+        {
+          "qualification_level_id": 4,
+          "degree_id": 16,
+          "specialization_id": 55,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    },
+    {
+      "group_id": 3,
+      "role_name": "Probationary Engineer (Mechanical) in E-II Grade",
+      "requirements": [
+        {
+          "qualification_level_id": 4,
+          "degree_id": 16,
+          "specialization_id": 29,
+          "functional_area_id": null,
+          "exp_years_required": 0
+        }
+      ]
+    }
+  ],
+  "unmapped_qualifications": [
+    {
+      "group_id": 1,
+      "field": "degree",
+      "raw_text": "B.Sc Engineering",
+      "context": "B.Sc Engineering degree in relevant disciplines (Electronics)"
+    },
+    {
+      "group_id": 2,
+      "field": "degree",
+      "raw_text": "B.Sc Engineering",
+      "context": "B.Sc Engineering degree in relevant disciplines (Electronics)"
+    },
+    {
+      "group_id": 3,
+      "field": "degree",
+      "raw_text": "B.Sc Engineering",
+      "context": "B.Sc Engineering degree in relevant disciplines (Mechanical)"
+    }
+  ]
+}

@@ -1,14 +1,23 @@
 """
-NE Career Hub — Job Automation Pipeline (Python CLI)
-Uses pdfplumber for PDF text extraction and DeepSeek via OpenRouter for AI steps.
+NE Career Hub — Job Automation Pipeline v2 (Python CLI)
+Uses pdfplumber for text extraction, ocrmypdf for OCR fallback,
+and a two-step Agentic LLM workflow for perfect relational DB mapping.
+
+v2 = direct PDF/URL → new relational schema (department_id / state_id /
+sector_id / job_eligibility_criteria), no old-schema intermediate step.
+
+v2.1 = adds role_name allocation per eligibility group (folded into the
+existing Step 5 agentic mapping call), and surfaces any degree /
+specialization / functional area / qualification level the AI could not
+map to an existing master table row, so gaps get logged for manual
+DB additions instead of silently becoming null.
 """
 
 import os
+import sys
 import re
 import json
 import time
-import random
-import string
 import hashlib
 import logging
 import argparse
@@ -18,10 +27,11 @@ import pdfplumber
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # ─────────────────────────────────────────────
-#  LOGGING — structured, writes to file + console
+#  LOGGING
 # ─────────────────────────────────────────────
 logging.basicConfig(
     level=logging.INFO,
@@ -33,65 +43,114 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
 # ─────────────────────────────────────────────
-#  CONFIG — set via env vars or CLI args
+#  CONFIG & INITIALIZATION
 # ─────────────────────────────────────────────
-OPENROUTER_API_KEY = os.environ["GOOGLE_API_KEY"]
-OPENROUTER_BASE    = os.environ["GOOGLE_BASE"]
-OPENROUTER_MODEL   = os.environ["GOOGLE_MODEL"]
-
+GOOGLE_MODEL   = os.environ.get("GOOGLE_MODEL", "gemini-1.5-flash")
+GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 SUPABASE_URL   = os.environ["SUPABASE_URL"]
 SUPABASE_KEY   = os.environ["SUPABASE_KEY"]
-SUPABASE_TABLE = os.environ["SUPABASE_TABLE"]
 
-GOOGLE_MODEL = os.environ["GOOGLE_MODEL"]
-GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
+JOBS_TABLE     = "jobs"
+CRITERIA_TABLE = "job_eligibility_criteria"
 
 
 # ─────────────────────────────────────────────
-#  PROMPTS (identical to HTML version)
+#  PROMPTS (The Agentic Workflow)
 # ─────────────────────────────────────────────
 EXTRACT_PROMPT = """You are a government job notification extraction engine.
 Extract ALL of the following fields from the provided document:
-1. Post Name(s), 2. Total Vacancy, 3. Vacancy Breakdown (category/state-wise),
-4. Pay Scale (with actual salary ranges, search entire document — NEVER MISS THIS),
-5. Educational Qualification, 6. Experience Required,
-7. Age Limit (with cutoff date), 8. Age Relaxation (category-wise) (mention if applies, important),
-9. Application Fee (search entire document — NEVER MISS THIS),
-10. Selection Process, 11. Exam Pattern, 12. Important Dates,
-13. How to Apply (steps), 14. Important Notes / hidden conditions
- 
+
+1. Post Name(s) [RULE: Format strictly as a vertical bulleted list. NEVER group into a single paragraph.]
+2. Total Vacancy
+3. Who Should Apply
+4. Vacancy Breakdown (Category/state-wise. If national level, only show breakdown for NE India states, ignore the rest)
+5. Pay Scale (Specific components: Starting Basic Pay, Range, Allowances, CTC. If only 7th CPC Pay Levels like "Level 8" are given, you MUST convert them to actual INR salary ranges like "₹47,600 - ₹1,51,100")
+6. Educational Qualification & Experience [CRITICAL: For every post mentioned, extract BOTH the required educational degree AND the required experience duration/details. If no experience is required, explicitly write "Fresher eligible / No experience required".]
+7. Age Limit (with cutoff date)
+8. Age Relaxation (category-wise, table format)
+9. Application Fee (Search entire document; set to 0 if free)
+10. Selection Process (Break down into distinct step-by-step phases)
+11. Exam Pattern
+12. Documents Required (List all documents, certificates, IDs, photos, and signatures needed for registration/application)
+13. Important Dates
+14. How to Apply (steps)
+15. Why This Matters for NE Applicants
+16. Important Notes / Hidden Conditionswith columns: Link Description | URL / Link)
+17. Frequently Asked Questions (FAQs)
+
 HARD RULES:
-- NEVER skip Application Fee. If not found, set value to 0
-- NEVER skip Pay Scale / Salary. If not found, search document again to double check
-- NEVER leave Pay Level without converting to salary range
-- NEVER include serial number columns in tables
-- If data missing: write "Not mentioned"
-- Scan ENTIRE document including last pages and footnotes
-- If a section like 'Exam Pattern' is not mentioned, skip that section entirely, dont write 'Not Mentioned'
- 
-OUTPUT FORMAT — use these exact ### headings:
+- NEVER skip Application Fee (default to 'not required' if not mentioned).
+- NEVER leave Pay Level without converting to monetary salary range.
+- NEVER include serial number columns in tables.
+- If data for a non-essential section is missing, write "Not mentioned". If 'Exam Pattern' is missing, skip that section entirely.
+- EXCLUSION RULE: Ignore blank application templates or annexures at the end of PDFs.
+- IF THERE IS A VACANCY TABLE OR ANY IMPORTANT TABLE IN THE SOURCE, REPLICATE IT EXACTLY.
+
+EDITORIAL QUICK TAKE RULES:
+- MANDATORY LENGTH: EXACTLY 3 to 4 sentences.
+- Help the user decide in 10 seconds with a direct, human tone.
+
+WHO SHOULD APPLY RULES:
+- Write EXACTLY 3 checklist points, each starting with ✅ emoji.
+- Must cover: qualification/subject match, application mode, and deadline.
+
+WHY THIS MATTERS FOR NE APPLICANTS RULES:
+- Write 2-3 sentences explaining regional/state relevance.
+
+FAQ RULES:
+- 3 to 5 Q&A pairs formatted strictly as:
+  Q: [Question]
+  A: [Answer]
+
+OUTPUT FORMAT — use EXACTLY these ### headings:
 ### Post Name(s)
 ### Vacancy Details
 ### Pay Scale
-### Educational Qualification
+### Educational Qualification & Experience
+### Who Should Apply
 ### Age Limit
+### Age Relaxation
 ### Application Fee
 ### Selection Process
 ### Exam Pattern
+### Documents Required
 ### Important Dates
 ### How to Apply
-### Important Notes"""
+### Why This Matters for NE Applicants
+### Important Notes
+### Frequently Asked Questions (FAQs)"""
 
 def HTML_PROMPT(text):
-    return f"""Convert this extracted job notification into clean TipTap-compatible HTML.
-STRICT RULES:
-- ONLY use h3 for section headings. Insert an <hr> tag immediately before every <h3> (except the very first one).
-- Wrap ALL list item content in <p> tags (e.g., <li><p>Content</p></li>).
-- For Educational Qualifications, format "OR" conditions using <br><strong>OR</strong>.
-- Transform structured data (Vacancy Details, Pay Scale, Experience, Age Limit, Application Fee, Exam Pattern) into multi-column relational tables (e.g., Columns for Post | Vacancies | UR | SC | etc., or Post | Pay Level). Do NOT create vertical key-value tables.
-- Tables MUST use EXACTLY this format and classes:
+    return f"""You are an expert UI/UX content formatter. Convert this extracted job notification into beautifully structured, highly scannable TipTap-compatible HTML.
+
+STRICT FORMATTING RULES:
+- ONLY use <h3> for section headings. Insert an <hr> tag immediately before every <h3> (except the very first one).
+- Wrap ALL list item content and table cell text in <p> tags (e.g., <li><p>Content</p></li>, <td><p>Value</p></td>).
+- SCANNABILITY: Use <strong> strategically to highlight critical terms (job titles, dates, numbers, major degrees). Do NOT bold entire sentences or paragraphs.
+
+EDUCATIONAL QUALIFICATION & EXPERIENCE FORMATTING RULE:
+- If qualifications are simple or generic for all posts (e.g. "Graduate in any discipline"), format as a bulleted list (<ul><li><p>...</p></li></ul>).
+- If qualifications/experience are specified separately across multiple posts or roles:
+  Format as a multi-column table with EXACTLY these headers:
+  • Post
+  • Educational Qualification
+  • Min. Experience
+  (If experience is not mentioned for a post, write "No experience required" in the Experience column).
+- Format "OR" / "AND" conditions inside cells as: <br><strong>OR</strong> / <strong>AND</strong>.
+
+LIST FORMATTING RULES:
+- "Selection Process", "Who Should Apply", "Documents Required", "Why This Matters for NE Applicants", and "How to Apply" MUST be unordered lists (<ul><li><p>...</p></li></ul>). Retain ✅ emojis in "Who Should Apply".
+
+FAQS FORMATTING RULE:
+- Format each Q&A pair strictly as:
+  <p><strong>Q: [Question text]</strong></p>
+  <p>A: [Answer text]</p>
+  (Do NOT use lists or tables for FAQs).
+
+TABLE MANDATE & STYLING:
+- Transform Vacancy Details, Pay Scale, Age Relaxation, Multi-Post Qualifications, and Important Links Table into multi-column relational tables.
+- Tables MUST use EXACTLY this HTML structure and classes:
 <table class="w-full border-collapse border border-divider my-4" style="min-width: 50px;">
   <tbody>
     <tr>
@@ -102,141 +161,238 @@ STRICT RULES:
     </tr>
   </tbody>
 </table>
-- Important Dates section must be a table
-- ALL <th> tags MUST have `class="bg-default-100 border border-divider p-2 font-bold text-left" colspan="1" rowspan="1"`
-- ALL <td> tags MUST have `class="border border-divider p-2 relative" colspan="1" rowspan="1"`
-- Wrap ALL cell content in <p> tags
-- NO serial number columns
-- Use <ul><li> for bullet lists, <p> for paragraphs, <strong> for emphasis
-- NO inline styles except those specified above
-- NO h1, NO h2, NO markdown, NO promotional language
-- If a section has no data, output: <p>Not mentioned in the notification.</p> — do NOT invent data.
-- Output ONLY raw HTML — no explanation, no markdown code fences
- 
-CONTENT:
+- NO serial number columns. NO inline styles except those specified above.
+- NO <h1>, NO <h2>, NO markdown code fences.
+- Output ONLY raw HTML.
+
+CONTENT TO CONVERT:
 {text}"""
 
-def JSON_PROMPT(text, dept_list, links):
-    dept_json = json.dumps(
-        [{"id": d["id"], "name": d["name"], "image_url": d.get("image_url")} for d in dept_list],
-        indent=2
-    )
+def BASE_JSON_PROMPT(text, links):
     links_str = "\n".join(f'- Label: "{l["label"]}" → {l["url"]}' for l in links)
-    return f"""You are a data extraction engine. Generate a JSON object for a Supabase jobs table.
- 
-OUTPUT: valid JSON only. No explanation, no markdown fences, no comments.
- 
-AVAILABLE DEPARTMENTS (match by name similarity):
-{dept_json}
- 
+    return f"""You are a data extraction engine. Generate a BASE JSON object for a job posting.
+
 USER-PROVIDED LINKS:
 {links_str}
 
-Follow these STRICT RULES for each field:
-
-1. "title": 
-   - Exact format: "[Dept] Recruitment [Year] – [Total Vacancies] [Post Name(s)] Posts"
-   - [Dept] Rules:
-	1.	Acronym + Location: Use standard prefix acronyms (NIT, IIT) but ALWAYS keep the specific location/state as a full word. (e.g., "NIT Sikkim" not "NITS").
-	2.	State Gov: Format as [State] [Core Function] (e.g., "Department of Health, Meghalaya" -> "Meghalaya Health"), State PSC are popular, hence leave as acronyms (e.g., APSC, NPSC).
-	3.	Standalone: Use pure acronyms only if there's no location suffix (e.g., "SSC", "ISRO").
-   - [Total Vacancies]: Calculate exact integer sum of all posts. NEVER use placeholders.
-   - [Post Name]: Do not mention all posts and make the title long, just one general word. e.g NIT Sikkim Recruitment 2026 - 30 Faculty Posts
-
-
-2. "overview": 
-   - Write a professional, 3-to-4 sentence summary.
-   - MUST include: Full Organization Name (and abbreviation), the specific Post Names, the recruitment type (e.g., "direct recruitment"), the exact Total Vacancies, the Pay Levels AND exact Salary Ranges, and the final Last Date to apply. 
-   - Example format: "[Full Name] ([Abbreviation]) has released a recruitment notification for [Posts]... A total of [X] vacancies are available... The pay scale is [Level] ([Range])..."
-
-3. "advertisementUrl" & "applyUrl":
-   - Extract the EXACT deep links to the PDF document and the actual application portal. 
-   - Do NOT just output the homepage or root domain (e.g., do not just write "https://recruitment.nic.in/"). Look for links ending in .pdf or specific portal endpoints.
-
-4. "min_qualification" & "sub_category":
-   - Analyze the "Educational Qualification" section to identify the lowest acceptable degree required for the role.
-   - If the requirement lists multiple degrees (e.g., "B.Tech or Bsc. Chemistry"), set min_qualification to the lower level (e.g., Graduate).
-   - Logic for "sub_category": Do not determine the sub-category based solely on the educational degree. Instead, analyze the Posting Department and the Nature of the Job.
-   - Primary Rule: If the department is related to Banking, Finance, Police, or Healthcare, set the sub_category to that specific industry (e.g., "Banking," "Law Enforcement," "Finance").
-   - Technical Rule: If the primary requirement is a technical degree (B.Tech/M.Tech/BE) and the department is generic or technical, set the sub_category to "Engineering."
-   - Fallback: Use the core function of the department to resolve any ambiguity between multiple educational requirements.
-
-5. "application_fee":
-   - If there is a fee waiver for certain categories (e.g., SC/ST/Women pay 0), but a standard fee for General candidates, accurately reflect the standard fee OR set to 0 if you are calculating the base minimum fee. (Align this with your database schema's expected behavior).
-
-6. "last_date": The given last date is in IST. You must convert the IST to equivalent UTC for the next step.
-
-7. "min_qualification_rank":
- 	Exact Rank Mapping: You must assign a rank based on the min_qualification you found earlier.
- 	0 : Any / No specific qualification mentioned
- 	10 : 8th Pass
- 	20 : 10th Pass / Matriculation / HSLC
- 	30 : 12th Pass / Higher Secondary / 10+2
- 	32 : ITI (Industrial Training Institute)
- 	35 : Diploma (Polytechnic, etc.)
- 	40 : Graduate (B.A, B.Sc, B.Com, generic degrees)
- 	45 : Engineering (B.E, B.Tech)
- 	50 : Post Graduate (M.A, M.Sc, M.Com, M.Tech)
- 	55 : Medical (MBBS, BDS, Nursing)
-
-   CRITICAL OUTPUT RULE: Output ONLY the raw JSON object. Do not include any conversational filler, introductory text (like "Here is the HTML..."), or markdown code blocks (like ```json). Under no circumstances should you prepend conversational text to the HTML string inside the description field.
-
-   Example of correct "description" field value:
-    "description": "<h3>Post Name(s)</h3><p>...</p>"
-    NOT:
-    "description": "Here is the HTML: <h3>Post Name(s)</h3>.." 
-
-   SELF-CHECK before outputting: verify that salary_min and salary_max are plain integers in rupees per month, last_date is a real date extracted from the document (not invented), and slug contains no spaces or special characters.
+Extract the raw text for department, sector, state, and eligibility criteria. We will map them to database IDs in the next step.
 
 SCHEMA:
 {{
-  "slug": "kebab-base-slug-with-job-department-acronym-no-suffix",
-  "title": "Org Recruitment Year – (Vacancy Number) Post Names (concise)",
-  "advertisement_url": [{{\"url\": \"links that look like official notices/PDFs\", \"label\": \"Notice\"}}],
-  "apply_url": [{{\"url\": \"links that look like apply/registration links\", \"label\": \"Apply\"}}],
+  "slug": "kebab-base-slug-with-org-acronym-no-suffix",
+  "title": Exact format: "[Dept] Recruitment [Year] – [Total Vacancies] [Post Name] Posts"
+   - Acronym + Location: Keep specific location/state as a full word (e.g., "NIT Sikkim", "Meghalaya Health").
+   - Conciseness: Use a general title like "Faculty Posts" or "Developer Posts" instead of listing all post names,
   "category": "one of: central, state, public-sector",
-  "overview": "4-5 line summary: vacancies + pay scale + last date",
-  "last_date": "ISO 8601 e.g. 2026-05-01T18:29:59+00:00 (use 18:29:59+00:00 if time unknown)",
-  "source_website": "best guess from links or org website",
-  "department_id": "matched dept id from list OR null if no match",
-  "min_qualification": "one of: 8th_pass,10th_pass,12th_pass,iti,diploma,graduate,post_graduate,engineering,medical or 'all'",
-  "state": "one of: assam,arunachal-pradesh,meghalaya,nagaland,manipur,mizoram,tripura,sikkim or 'all' for central govt",
-  "sub_category": "one of: psu,railway,defence,banking,teaching,police,engineering,medical,clerical,postal,administrative,upsc_ssc,judiciary,non_technical,research,healthcare,sports",
-  "application_fee": integer rupees (0 if free, use SC/ST fee or the least),
+  "overview": "3-4 sentence professional summary of the notification",
+  "last_date": "ISO 8601 UTC date (e.g. 2026-05-01T18:29:59+00:00)",
+  "source_website": "best guess URL of official website",
+  "application_fee": integer rupees (0 if free or calculate standard minimum),
   "salary_min": integer monthly minimum rupees,
   "salary_max": integer monthly maximum rupees,
-  "keywords": ["array", "of", "5-7", "relevant", "lowercase", "search", "tags", "and", "job department acronym"],
-  "min_qualification_rank": integer rank corresponding to the min_qualification
+  "age_min": integer (minimum age allowed, usually 18 or 21),
+  "age_max_gen": integer (maximum age for general category),
+  "keywords": ["array", "of", "5-7", "lowercase", "search", "tags"],
+  "advertisement_url": [{{\"url\": \"notice links\", \"label\": \"Notice\"}}],
+  "apply_url": [{{\"url\": \"apply links\", \"label\": \"Apply\"}}],
+
+  "raw_post_names": "Extract the specific names of the posts",
+  "raw_department_text": "e.g. Staff Selection Commission (SSC)",
+  "raw_sector_text": "e.g. Government Administration",
+  "raw_state_text": "e.g. Assam or All India",
+  "raw_eligibility_text": "Include ALL exact rules for degrees, experience, and alternative paths."
 }}
- 
+
+CRITICAL RULE: Output ONLY valid JSON. No markdown code fences (like ```json), no conversation.
+
 JOB NOTIFICATION TEXT:
 {text}"""
 
-def DEPT_MATCH_PROMPT(org_name, dept_list):
-    dept_json = json.dumps([{"id": d["id"], "name": d["name"]} for d in dept_list])
-    return f"""Given this organization name extracted from a job notification: "{org_name}"
- 
-And this list of existing departments:
-{dept_json}
- 
-Does any existing department match this organization?
-Reply with ONLY valid JSON — no explanation, no fences:
-If match found: {{"matched": true, "id": "dept-id", "name": "dept-name", "confidence": "high|medium|low"}}
-If no match: {{"matched": false, "suggestedName": "full official name of the organization"}}"""
+def RELATIONAL_MAPPING_PROMPT(base_json: dict, masters: dict) -> str:
+    return f"""You are an expert database architect specializing in the Indian education system and government recruitment rules.
+Your task is to map raw extracted job data into strict relational database IDs based on the provided Master Tables.
+
+RAW DATA TO MAP:
+- Post Names: {base_json.get('raw_post_names')}
+- Department Text: {base_json.get('raw_department_text')}
+- Sector Text: {base_json.get('raw_sector_text')}
+- State Text: {base_json.get('raw_state_text')}
+- Eligibility Rules: {base_json.get('raw_eligibility_text')}
+- Source URLs: {base_json.get('source_website')}
+
+MASTER TABLES (ID mapping):
+- Departments (match by name similarity or hierarchical fallback): {json.dumps(masters['departments'])}
+- States: {json.dumps(masters['states'])}
+- Sectors: {json.dumps(masters['sectors'])}
+- Qualification Levels: {json.dumps(masters['qualification_levels'])}
+- Degrees: {json.dumps(masters['degrees'])}
+- Specializations: {json.dumps(masters['specializations'])}
+- Functional Areas: {json.dumps(masters['functional_areas'])}
+
+STRICT ELIGIBILITY MAPPING RULES (DO NOT GUESS):
+1. OR Logic (group_id): Different alternative paths must have different group_ids. (e.g. Degree in IT = group 1, Degree in Econ = group 2).
+2. AND Logic (same group): If a post requires a Degree AND a Diploma, they go in the SAME group_id.
+3. Indian Context Splits:
+   - If a requirement is "Statistics", you MUST split it into BOTH "B.A." and "B.Sc." as separate alternative paths (different group_ids).
+   - If a requirement is "IT/CS", you MUST split it into "B.Tech", "B.Sc.", and "BCA" as separate alternative paths.
+4. STRICT NULLS for Specialization: Do NOT hallucinate specializations. If the text says "Bachelor's in any subject" or "Degree from recognized university", output null for BOTH Degree and Specialization.
+5. FUNCTIONAL AREA LOGIC (CRITICAL):
+   - If `exp_years_required` is 0 (Fresher), `functional_area_id` MUST BE null.
+   - If `exp_years_required` > 0 (Experienced), map `functional_area_id` to the most relevant domain based on the required experience field or the Post Names.
+6. Deduplication: Do not duplicate identical criteria groups if multiple posts have the exact same requirement.
+
+DEPARTMENT MATCHING RULE (BE HIGHLY FLEXIBLE):
+7. You MUST prioritize finding a valid `department_id` to avoid nulls. Use this hierarchy:
+   - Level 1 (Fuzzy): Match by name similarity.
+   - Level 2 (Umbrella): If recruited by an overarching body (e.g., "Assam Home Guards" via "APSC" or "SSC"), map to the umbrella body. Check URLs for clues.
+   - Level 3 (State Fallback): If it is a random local body (e.g., "MPCB Manipur" or "Arts and Crafts") that doesn't exist, safely map it to the broader state government department (e.g., "Government of Manipur") if available in the master list.
+8. ESSENTIAL VS DESIRABLE: You MUST IGNORE any qualifications marked as "Desirable" or "Preferred". ONLY map mandatory/essential qualifications. If a post says "Bachelor's Degree (Desirable: MBA)", you ONLY map the Bachelor's Degree.
+9. NO LAZINESS (MAP EVERY SUBJECT): If a post lists 10 different accepted subjects (e.g., Demography, AI, Operation Research), you MUST map EVERY SINGLE ONE as a separate alternative path (different group_ids). DO NOT truncate or summarize the list.
+10. If for teaching jobs the qualification states as per UGC norms, web search what it means and apply here appropriately
+
+ROLE_NAME ASSIGNMENT RULES (per group_id):
+11. If the notification advertises a SINGLE post, every group_id gets the SAME role_name — the exact post title as named in the source (e.g. "Junior Engineer", "Staff Nurse"). Never invent a role_name not grounded in Post Names / the notification text.
+12. If the notification advertises MULTIPLE posts (e.g. "Junior Engineer (Civil)" vs "Junior Engineer (Mechanical)" as separate posts with separate vacancies), match each group_id to the specific post whose requirements it represents. Use the degree/specialization branch in that group to disambiguate.
+13. role_name is the post/designation name ONLY — no department, no vacancy counts, no age/salary info.
+14. If you genuinely cannot determine a specific post name for a group, output "Unspecified" for that group's role_name rather than guessing.
+
+UNMAPPED QUALIFICATION RULE (CRITICAL — DO NOT SKIP):
+15. For EVERY degree, specialization, or functional area mentioned in the Eligibility Rules text that has NO matching entry in the corresponding Master Table above, you MUST:
+    a. Still output `null` for that field in the requirement (never guess or force a near-match ID).
+    b. Add ONE entry to the top-level `unmapped_qualifications` array describing exactly what text you couldn't map, which field it belongs to (degree / specialization / functional_area / qualification_level), and which group_id it affects.
+    c. Do this even if only PART of a requirement is unmappable (e.g. degree matched fine but the specialization didn't exist yet).
+    This applies to Degrees, Specializations, Functional Areas, and Qualification Levels alike — not just degrees.
+
+SCHEMA TO OUTPUT (Output ONLY raw JSON):
+{{
+  "department_id": "matched uuid or null",
+  "sector_id": integer or null,
+  "state_id": integer or null,
+  "eligibility_criteria": [
+    {{
+      "group_id": 1,
+      "role_name": "string",
+      "requirements": [
+        {{
+          "qualification_level_id": integer,
+          "degree_id": integer or null,
+          "specialization_id": integer or null,
+          "functional_area_id": integer or null,
+          "exp_years_required": integer (0 if none)
+        }}
+      ]
+    }}
+  ],
+  "unmapped_qualifications": [
+    {{
+      "group_id": 1,
+      "field": "degree | specialization | functional_area | qualification_level",
+      "raw_text": "the exact term from the source text that had no master table match",
+      "context": "brief note — e.g. which post/requirement this belongs to"
+    }}
+  ]
+}}"""
 
 
 # ─────────────────────────────────────────────
-#  HELPERS
+#  HELPERS & AI EXECUTION
 # ─────────────────────────────────────────────
-def short_id():
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
-
 def content_hash(text: str) -> str:
     """Stable 8-char hash of source content — used for idempotency checks."""
     return hashlib.md5(text[:5000].encode()).hexdigest()[:8]
 
 def strip_fences(text, fence="json"):
     return re.sub(rf"```{fence}?\n?", "", text).replace("```", "").strip()
+
+def call_gemini(prompt: str, system: str = "You are a helpful assistant.", retries: int = 5) -> str:
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GOOGLE_MODEL}:generateContent?key={GOOGLE_API_KEY}"
+    for attempt in range(retries):
+        try:
+            resp = requests.post(
+                url,
+                headers={"Content-Type": "application/json"},
+                json={
+                    "systemInstruction": {"parts": [{"text": system}]},
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {"temperature": 0.1, "maxOutputTokens": 8192},
+                },
+                timeout=120,
+            )
+            resp.raise_for_status()
+            return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+        except requests.HTTPError as e:
+            status = e.response.status_code if e.response is not None else 0
+            if status == 429 or status >= 500:
+                wait = (2 ** attempt) * 5
+                logger.warning("    ⚠  API error (%s) on attempt %d/%d — retrying in %ds...", status, attempt + 1, retries, wait)
+                time.sleep(wait)
+            else:
+                raise
+    raise RuntimeError(f"Gemini API failed after {retries} retries")
+
+def run_ocr_on_pdf(pdf_path: str) -> str | None:
+    """Run OCRmyPDF on a PDF file to generate an OCR'd PDF."""
+    import subprocess
+    import shutil
+    ocrmypdf_bin = shutil.which("ocrmypdf")
+    if not ocrmypdf_bin:
+        logger.error("    Error: 'ocrmypdf' CLI tool not found on system PATH. "
+                     "Please install it using 'brew install ocrmypdf'.")
+        return None
+
+    pdf_path_obj = Path(pdf_path)
+    output_pdf_path = pdf_path_obj.parent / f"{pdf_path_obj.stem}_ocr{pdf_path_obj.suffix}"
+
+    logger.info("    Running: ocrmypdf --force-ocr %s %s", pdf_path, output_pdf_path)
+    try:
+        subprocess.run(
+            [ocrmypdf_bin, "--force-ocr", str(pdf_path), str(output_pdf_path)],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        logger.info("    ✓ OCRmyPDF completed successfully")
+        return str(output_pdf_path)
+    except subprocess.CalledProcessError as e:
+        logger.error("    ❌ OCRmyPDF failed with exit code %d", e.returncode)
+        logger.error("    Stdout: %s", e.stdout)
+        logger.error("    Stderr: %s", e.stderr)
+        return None
+
+def extract_text_with_ocr_fallback(pdf_path: str) -> str:
+    """Runs ocrmypdf locally on a scanned PDF, then re-extracts text via pdfplumber."""
+    logger.warning("    ⚠ Scanned image detected. Running local OCRmyPDF...")
+    ocr_pdf_path = run_ocr_on_pdf(pdf_path)
+    if not ocr_pdf_path:
+        logger.warning("    OCRmyPDF execution failed or was not available.")
+        return ""
+
+    ocr_text = ""
+    try:
+        with pdfplumber.open(ocr_pdf_path) as pdf:
+            for page in pdf.pages:
+                t = page.extract_text()
+                if t:
+                    ocr_text += t + "\n"
+    finally:
+        try:
+            os.remove(ocr_pdf_path)
+        except Exception as cleanup_err:
+            logger.warning("    Failed to delete temporary OCR PDF: %s", cleanup_err)
+
+    return ocr_text
+
+def fetch_url_text(url: str) -> str:
+    """Fetch and strip HTML from a URL (ported from v1)."""
+    r = requests.get(url, timeout=10)
+    r.raise_for_status()
+    text = r.text
+    if "<html" in text.lower() or "<!doctype" in text.lower():
+        text = re.sub(r"<style[^>]*>[\s\S]*?</style>", "", text, flags=re.I)
+        text = re.sub(r"<script[^>]*>[\s\S]*?</script>", "", text, flags=re.I)
+        text = re.sub(r"<[^>]+>", " ", text)
+        text = re.sub(r"\s{2,}", " ", text).strip()
+    return text
 
 def format_telegram_message(payload: dict) -> str:
     """Use AI to format a clean Telegram message from the payload."""
@@ -265,7 +421,7 @@ Last Date: {payload.get('last_date')}
 Min Qualification: {payload.get('min_qualification')}
 Overview: {payload.get('overview', '')[:300]}
 """
-    return call_deepseek(prompt, system="You are a Telegram message formatter. Output only the final message text, no explanation.")
+    return call_gemini(prompt, system="You are a Telegram message formatter. Output only the final message text, no explanation.")
 
 
 def send_telegram(message: str) -> bool:
@@ -297,29 +453,39 @@ def send_telegram(message: str) -> bool:
 
 
 # ─────────────────────────────────────────────
-#  PAYLOAD VALIDATION
+#  PAYLOAD VALIDATION (new relational schema)
 # ─────────────────────────────────────────────
 def validate_payload(payload: dict):
     """
-    Validate AI-generated payload before publishing.
-    Raises ValueError listing all problems found.
+    Validate the AI-generated + mapped payload before publishing.
+    Raises ValueError listing all hard problems found.
+    Soft issues (nullable relational IDs) are only logged as warnings.
     """
     errors = []
 
-    # Required fields must be present and non-empty
-    for field in ["title", "slug", "last_date", "overview", "salary_min", "salary_max"]:
-        if not payload.get(field) and payload.get(field) != 0:
+    # Required top-level fields
+    for field in ["title", "slug", "last_date", "overview", "category", "source_website"]:
+        if not payload.get(field):
             errors.append(f"Missing required field: {field}")
 
-    # Integer type checks
+    for field in ["salary_min", "salary_max"]:
+        if payload.get(field) is None:
+            errors.append(f"Missing required field: {field}")
+
+    # Integer type checks (nullable ones only checked when present)
     for int_field in ["salary_min", "salary_max", "application_fee"]:
         val = payload.get(int_field)
         if val is not None and not isinstance(val, int):
             errors.append(f"{int_field} must be an integer, got: {type(val).__name__} ({val!r})")
 
+    for nullable_int_field in ["age_min", "age_max_gen"]:
+        val = payload.get(nullable_int_field)
+        if val is not None and not isinstance(val, int):
+            errors.append(f"{nullable_int_field} must be an integer or null, got: {type(val).__name__} ({val!r})")
+
     # Salary sanity checks (catches hallucinated values)
-    sal_min = payload.get("salary_min", 0)
-    sal_max = payload.get("salary_max", 0)
+    sal_min = payload.get("salary_min")
+    sal_max = payload.get("salary_max")
     if isinstance(sal_min, int) and sal_min > 500_000:
         errors.append(f"salary_min suspiciously high: {sal_min} — likely hallucinated")
     if isinstance(sal_min, int) and isinstance(sal_max, int) and sal_max < sal_min:
@@ -335,19 +501,52 @@ def validate_payload(payload: dict):
     if slug and " " in slug:
         errors.append(f"slug contains spaces: {slug!r}")
 
-    # Enum validation
-    valid_min_qual = {
-        "8th_pass","10th_pass","12th_pass","iti","diploma",
-        "graduate","post_graduate","engineering","medical","all"
-    }
-    min_qual = payload.get("min_qualification")
-    if min_qual and min_qual not in valid_min_qual:
-        errors.append(f"min_qualification invalid value: {min_qual!r}")
-
-    valid_categories = {"central", "state", "public-sector"}
+    # Category enum
+    valid_categories = {"central", "state", "public-sector", "private"}
     category = payload.get("category")
     if category and category not in valid_categories:
         errors.append(f"category invalid value: {category!r}")
+
+    # ── Eligibility criteria structure ──────────────
+    criteria = payload.get("eligibility_criteria")
+    if criteria is not None:
+        if not isinstance(criteria, list):
+            errors.append(f"eligibility_criteria must be a list, got: {type(criteria).__name__}")
+        else:
+            for gi, group in enumerate(criteria):
+                if not isinstance(group, dict):
+                    errors.append(f"eligibility_criteria[{gi}] must be an object")
+                    continue
+                if "group_id" not in group:
+                    errors.append(f"eligibility_criteria[{gi}] missing group_id")
+                if not group.get("role_name"):
+                    errors.append(f"eligibility_criteria[{gi}] (group_id={group.get('group_id')}) missing role_name")
+                reqs = group.get("requirements")
+                if not isinstance(reqs, list) or not reqs:
+                    errors.append(f"eligibility_criteria[{gi}] must have a non-empty 'requirements' list")
+                    continue
+                for ri, req in enumerate(reqs):
+                    if not isinstance(req, dict):
+                        errors.append(f"eligibility_criteria[{gi}].requirements[{ri}] must be an object")
+                        continue
+                    if not isinstance(req.get("qualification_level_id"), int):
+                        errors.append(
+                            f"eligibility_criteria[{gi}].requirements[{ri}] missing/invalid "
+                            f"qualification_level_id: {req.get('qualification_level_id')!r}"
+                        )
+                    for opt_int_field in ["degree_id", "specialization_id", "functional_area_id"]:
+                        v = req.get(opt_int_field)
+                        if v is not None and not isinstance(v, int):
+                            errors.append(
+                                f"eligibility_criteria[{gi}].requirements[{ri}].{opt_int_field} "
+                                f"must be int or null, got {v!r}"
+                            )
+                    exp = req.get("exp_years_required")
+                    if exp is not None and not isinstance(exp, int):
+                        errors.append(
+                            f"eligibility_criteria[{gi}].requirements[{ri}].exp_years_required "
+                            f"must be an integer, got {exp!r}"
+                        )
 
     if errors:
         raise ValueError(
@@ -355,133 +554,50 @@ def validate_payload(payload: dict):
             "\n".join(f"  • {e}" for e in errors)
         )
 
+    # Soft warnings — nullable relational IDs that ideally should be resolved
+    for soft_field in ["department_id", "state_id", "sector_id"]:
+        if payload.get(soft_field) is None:
+            logger.warning("    ⚠  %s is null — flag for manual review", soft_field)
+
     logger.info("    ✓ Payload validation passed")
 
 
 # ─────────────────────────────────────────────
-#  STEP 0 — PDF / URL EXTRACTION
+#  SUPABASE LOGIC
 # ─────────────────────────────────────────────
-def extract_text_from_pdf(pdf_paths: str) -> str:
-    """Extract all text from a PDF using pdfplumber."""
-    text_parts = []
-    with pdfplumber.open(pdf_paths) as pdf:
-        for page in pdf.pages:
-            t = page.extract_text()
-            if t:
-                text_parts.append(t)
-    return "\n\n".join(text_parts)
-
-def fetch_url_text(url: str) -> str:
-    """Fetch and strip HTML from a URL."""
-    r = requests.get(url, timeout=10)
-    r.raise_for_status()
-    text = r.text
-    if "<html" in text.lower() or "<!doctype" in text.lower():
-        text = re.sub(r"<style[^>]*>[\s\S]*?</style>", "", text, flags=re.I)
-        text = re.sub(r"<script[^>]*>[\s\S]*?</script>", "", text, flags=re.I)
-        text = re.sub(r"<[^>]+>", " ", text)
-        text = re.sub(r"\s{2,}", " ", text).strip()
-    return text
-
-
-# ─────────────────────────────────────────────
-#  AI — DeepSeek via OpenRouter (with retry)
-# ─────────────────────────────────────────────
-# def call_deepseek(prompt: str, system: str = "You are a helpful assistant.", retries: int = 3) -> str:
-#     if not OPENROUTER_API_KEY:
-#         raise ValueError("OPENROUTER_API_KEY is not set")
-
-#     for attempt in range(retries):
-#         try:
-#             resp = requests.post(
-#                 OPENROUTER_BASE,
-#                 headers={
-#                     "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-#                     "Content-Type": "application/json",
-#                     "HTTP-Referer": "https://necareerhub.in",
-#                     "X-Title": "NE Career Hub Job Automation",
-#                 },
-#                 json={
-#                     "model": OPENROUTER_MODEL,
-#                     "messages": [
-#                         {"role": "system", "content": system},
-#                         {"role": "user", "content": prompt},
-#                     ],
-#                     "temperature": 0.1,
-#                     "max_tokens": 8192,
-#                 },
-#                 timeout=120,
-#             )
-#             resp.raise_for_status()
-#             return resp.json()["choices"][0]["message"]["content"]
-
-#         except requests.HTTPError as e:
-#             status = e.response.status_code if e.response is not None else 0
-#             if status == 429 or status >= 500:
-#                 wait = 2 ** attempt  # 1s, 2s, 4s
-#                 logger.warning(
-#                     "    ⚠  API error (%s) on attempt %d/%d — retrying in %ds...",
-#                     status, attempt + 1, retries, wait
-#                 )
-#                 time.sleep(wait)
-#             else:
-#                 raise  # Don't retry on 4xx client errors (bad request, auth, etc.)
-
-#     raise RuntimeError(f"DeepSeek API failed after {retries} retries")
-def call_deepseek(prompt: str, system: str = "You are a helpful assistant.", retries: int = 5) -> str:
-    for attempt in range(retries):
-        try:
-            resp = requests.post(
-                f"https://generativelanguage.googleapis.com/v1beta/models/{GOOGLE_MODEL}:generateContent?key={GOOGLE_API_KEY}",
-                headers={"Content-Type": "application/json"},
-                json={
-                    "system_instruction": {"parts": [{"text": system}]},
-                    "contents": [{"parts": [{"text": prompt}]}],
-                    "generationConfig": {"temperature": 0.1, "maxOutputTokens": 8192},
-                },
-                timeout=120,
-            )
-            resp.raise_for_status()
-            return resp.json()["candidates"][0]["content"]["parts"][0]["text"]
-
-        except requests.HTTPError as e:
-            status = e.response.status_code if e.response is not None else 0
-            if status == 429 or status >= 500:
-                # Increased backoff: 5s, 10s, 20s, 40s, 80s
-                wait = (2 ** attempt) * 5 
-                logger.warning("    ⚠  API error (%s) on attempt %d/%d — retrying in %ds...", status, attempt + 1, retries, wait)
-                time.sleep(wait)
-            else:
-                raise
-
-    raise RuntimeError(f"Gemini API failed after {retries} retries")
-
-
-# ─────────────────────────────────────────────
-#  SUPABASE
-# ─────────────────────────────────────────────
-def fetch_departments() -> list:
-    if not SUPABASE_URL or not SUPABASE_KEY:
-        logger.warning("    ⚠  Supabase not configured — skipping dept fetch")
-        return []
+def fetch_master_table(table_name: str, cols: str = "id,name") -> list:
+    if not SUPABASE_URL or not SUPABASE_KEY: return []
     r = requests.get(
-        f"{SUPABASE_URL}/rest/v1/departments?select=id,name,slug,image_url&order=name",
+        f"{SUPABASE_URL}/rest/v1/{table_name}?select={cols}",
         headers={"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"},
         timeout=10,
     )
     r.raise_for_status()
     return r.json()
 
+def load_all_masters():
+    logger.info("    Fetching master tables for Agentic mapping...")
+    return {
+        "departments": fetch_master_table("departments"), # Double check if this needs to be master_departments in your DB
+        "states": fetch_master_table("states"),           # Double check if this needs to be master_states in your DB
+        "sectors": fetch_master_table("master_sectors"),
+        "qualification_levels": fetch_master_table("master_qualification_levels"),
+        "degrees": fetch_master_table("master_degrees"),
+        "specializations": fetch_master_table("master_specializations"),
+        "functional_areas": fetch_master_table("master_functional_areas"),
+    }
+
 def check_duplicate(content_hash_val: str) -> bool:
     """
-    Check if a job with this content hash already exists in Supabase.
+    Check if a job with this content hash already exists in Supabase
+    (the hash is suffixed onto the slug at build time — see run_pipeline).
     Returns True if a duplicate is found.
     """
     if not SUPABASE_URL or not SUPABASE_KEY:
         return False
     try:
         r = requests.get(
-            f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}?select=id,slug&slug=ilike.*{content_hash_val}*",
+            f"{SUPABASE_URL}/rest/v1/{JOBS_TABLE}?select=id,slug&slug=ilike.*{content_hash_val}*",
             headers={"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"},
             timeout=10,
         )
@@ -498,226 +614,218 @@ def check_duplicate(content_hash_val: str) -> bool:
     return False
 
 def publish_job(payload: dict) -> dict:
-    payload.pop("isSaved", None)
-    payload.pop("id", None)
-    payload.pop("departmentId", None)
+    """Inserts Job, captures ID, then inserts Eligibility Criteria, handling rollbacks."""
+    criteria_groups = payload.pop("eligibility_criteria", [])
 
-    r = requests.post(
-        f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}",
-        headers={
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_KEY,
-            "Authorization": f"Bearer {SUPABASE_KEY}",
-            "Prefer": "return=representation",
-        },
-        json=[payload],
-        timeout=15,
-    )
-    if not r.ok:
-        logger.error("    Supabase error %s: %s", r.status_code, r.text)  # ← add this
-    r.raise_for_status()
-    return r.json()[0]
+    # --- AGGRESSIVE CLEANUP OF OLD SCHEMA / TRANSIENT FIELDS ---
+    legacy_keys = [
+        "min_qualification",
+        "min_qualification_rank",
+        "sub_category",
+        "state",
+        "isSaved",
+        "id",
+    ]
+    for key in legacy_keys:
+        payload.pop(key, None)
+
+    headers = {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Prefer": "return=representation",
+    }
+
+    # 1. Insert Job Post
+    job_resp = requests.post(f"{SUPABASE_URL}/rest/v1/{JOBS_TABLE}", headers=headers, json=[payload], timeout=15)
+
+    if not job_resp.ok:
+        logger.error(f"Supabase Job Insert Failed! Reason: {job_resp.text}")
+
+    job_resp.raise_for_status()
+    inserted_job = job_resp.json()[0]
+    job_id = inserted_job["id"]
+
+    # 2. Insert Eligibility Criteria Rows
+    if criteria_groups:
+        criteria_rows = []
+        for group in criteria_groups:
+            group_id = group.get("group_id", 1)
+            role_name = group.get("role_name")
+            for req in group.get("requirements", []):
+                req["job_id"] = job_id
+                req["group_id"] = group_id
+                req["role_name"] = role_name
+                criteria_rows.append(req)
+
+        if criteria_rows:
+            crit_resp = requests.post(f"{SUPABASE_URL}/rest/v1/{CRITERIA_TABLE}", headers=headers, json=criteria_rows, timeout=15)
+            if not crit_resp.ok:
+                logger.error(f"    ⚠ Criteria insert failed! Reason: {crit_resp.text}")
+                logger.error("    Rolling back job %s...", job_id)
+                requests.delete(f"{SUPABASE_URL}/rest/v1/{JOBS_TABLE}?id=eq.{job_id}", headers=headers)
+                crit_resp.raise_for_status()
+
+    return inserted_job
 
 # ─────────────────────────────────────────────
-#  PIPELINE
+#  PIPELINE EXECUTOR
 # ─────────────────────────────────────────────
-def run_pipeline(
-    pdf_paths: list = None,
-    source_url: str = None,
-    links: list = None,
-    publish: bool = False,      # renamed from dry_run — must opt-in to publish
-    output_dir: str = ".",
-):
+def run_pipeline(pdf_paths=None, source_url=None, links=None, publish=False, force=False, output_dir="."):
     if not pdf_paths and not source_url:
-        raise ValueError("Provide either --pdf or --url")
-
+        raise ValueError("Provide --pdf or --url")
     links = links or []
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # ── STEP 0: Fetch raw content ──────────────────
+    # ── STEP 0: Fetch content & OCR ────────────
     logger.info("\n📥 Step 0: Fetching content...")
     raw_text = ""
+
     if source_url:
         logger.info("    Fetching URL: %s", source_url)
-        raw_text = fetch_url_text(source_url)
-        logger.info("    ✓ Got %d chars from URL", len(raw_text))
-        
+        url_text = fetch_url_text(source_url)
+        logger.info("    ✓ Got %d chars from URL", len(url_text))
+        raw_text += url_text + "\n"
+
     if pdf_paths:
-        all_pdf_text = []
         for pdf_file in pdf_paths:
             logger.info("    Extracting PDF: %s", pdf_file)
-            pdf_text = extract_text_from_pdf(pdf_file)
-            logger.info("    ✓ Extracted %d chars from %s", len(pdf_text), pdf_file)
-            all_pdf_text.append(f"--- FILE: {pdf_file} ---\n{pdf_text}")
-        raw_text = raw_text if raw_text else "\n\n".join(all_pdf_text)
+            pdf_text = ""
+            with pdfplumber.open(pdf_file) as pdf:
+                for page in pdf.pages:
+                    t = page.extract_text()
+                    if t: pdf_text += t + "\n"
+
+            # Trigger OCR if text is basically empty (scanned image)
+            if len(pdf_text.strip()) < 150:
+                pdf_text = extract_text_with_ocr_fallback(pdf_file)
+
+            raw_text += pdf_text + "\n"
 
     if not raw_text.strip():
         raise ValueError("No content extracted from source")
 
-    # Compute content hash for idempotency
     src_hash = content_hash(raw_text)
     logger.info("    Content hash: %s", src_hash)
 
-    # ── STEP 1: Fetch departments ─────────────────
-    logger.info("\n🏛️  Step 1: Fetching departments from Supabase...")
-    departments = fetch_departments()
-    logger.info("    ✓ %d departments loaded", len(departments))
-
-    # ── Set up debug output directory ─────────────
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     debug_dir = out / f"debug_{timestamp}"
     debug_dir.mkdir(exist_ok=True)
 
-    # ── STEP 2: Extract job details ───────────────
-    logger.info("\n🤖 Step 2: Extracting job details via LLM...")
-    extract_input = EXTRACT_PROMPT
-    if source_url:
-        extract_input += f"\n\nSOURCE URL: {source_url}\n\nPAGE CONTENT:\n{raw_text}"
-    else:
-        extract_input += f"\n\nPDF CONTENT:\n{raw_text}"
+    # ── STEP 1: Fetch Master DB Tables ─────────
+    logger.info("\n🏛️  Step 1: Loading Master Database Tables...")
+    masters = load_all_masters()
 
-    extracted_text = call_deepseek(extract_input)
-    logger.info("    ✓ Extracted %d chars", len(extracted_text))
+    # ── STEP 2: Main AI Extraction ─────────────
+    logger.info("\n🤖 Step 2: Extracting raw job details...")
+    extracted_text = call_gemini(EXTRACT_PROMPT + f"\n\nCONTENT:\n{raw_text}")
     (debug_dir / "2_extracted.txt").write_text(extracted_text, encoding="utf-8")
 
-    # ── STEP 3: Dept matching ──────────────────────
-    logger.info("\n🏛️  Step 3: Matching department...")
-    org_name = None
-    for pattern in [
-        r"###\s*(?:Organization|Issuing Authority|Recruiting Body)[^\n]*\n([^\n]+)",
-        r"###\s*Post Name[^\n]*\n([^\n]+)",
-    ]:
-        m = re.search(pattern, extracted_text, re.IGNORECASE)
-        if m:
-            org_name = m.group(1).strip(" *#-")
-            break
-    if not org_name:
-        for line in extracted_text.splitlines():
-            line = line.strip(" *#-")
-            if line and not line.startswith("###"):
-                org_name = line
-                break
-    org_name = org_name or "Unknown Organization"
-    logger.info("    Org detected: %s", org_name)
-
-    dept_result = {"matched": False, "suggestedName": org_name}
-    resolved_dept = None
-    dept_raw = ""
-
-    if departments:
-        try:
-            dept_raw = call_deepseek(DEPT_MATCH_PROMPT(org_name, departments))
-            dept_result = json.loads(strip_fences(dept_raw, "json"))
-        except Exception as e:
-            logger.warning("    ⚠  Dept match parse failed: %s", e)
-    (debug_dir / "3_dept_match.txt").write_text(dept_raw, encoding="utf-8")
-
-    if dept_result.get("matched"):
-        resolved_dept = next(
-            (d for d in departments if d["id"] == dept_result.get("id")), None
-        ) or next(
-            (d for d in departments if d["name"] == dept_result.get("name")), None
-        )
-        if resolved_dept:
-            logger.info("    ✓ Matched dept: %s", resolved_dept["name"])
-        else:
-            logger.warning("    ⚠  Model said matched but dept not found in list")
-    else:
-        suggested = dept_result.get("suggestedName", org_name)
-        logger.warning("    ⚠  No existing dept match — suggested: %s", suggested)
-
-    # ── STEP 4: Generate TipTap HTML ──────────────
-    logger.info("\n🧱 Step 4: Generating TipTap HTML...")
-    html_raw = call_deepseek(HTML_PROMPT(extracted_text))
+    # ── STEP 3: Generate TipTap HTML ───────────
+    logger.info("\n🧱 Step 3: Generating HTML...")
+    html_raw = call_gemini(HTML_PROMPT(extracted_text))
     generated_html = strip_fences(html_raw, "html")
-    logger.info("    ✓ HTML generated (%d chars)", len(generated_html))
-    (debug_dir / "4_html_raw.html").write_text(html_raw, encoding="utf-8")
+    (debug_dir / "3_html_raw.html").write_text(html_raw, encoding="utf-8")
 
-    # ── STEP 5: Build JSON payload ─────────────────
-    logger.info("\n🗂️  Step 5: Building JSON payload...")
-    json_raw = call_deepseek(JSON_PROMPT(extracted_text, departments, links))
-    json_clean = strip_fences(json_raw, "json")
-    (debug_dir / "5_json_raw.txt").write_text(json_raw, encoding="utf-8")
+    # ── STEP 4: Build Base JSON ────────────────
+    logger.info("\n🗂️  Step 4: Building Base JSON...")
+    base_json_raw = call_gemini(BASE_JSON_PROMPT(extracted_text, links))
+    base_json_str = strip_fences(base_json_raw, "json")
+    (debug_dir / "4_base_json.txt").write_text(base_json_raw, encoding="utf-8")
 
     try:
-        payload = json.loads(json_clean)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"DeepSeek returned invalid JSON: {e}\n\nRaw:\n{json_clean[:500]}")
+        payload = json.loads(base_json_str)
+    except Exception as e:
+        raise ValueError(f"Gemini returned invalid BASE JSON: {e}\n\nRaw:\n{base_json_str[:500]}")
 
-    # Merge dept info
-    # if resolved_dept:
-        # payload["departmentId"]   = resolved_dept["id"]
-
-    # Slug: use content hash suffix for idempotency (consistent across re-runs)
-    if payload.get("slug"):
-        payload["slug"] = payload["slug"] + "-" + src_hash
-    
-    # Inject generated HTML as description
     payload["description"] = generated_html
+    if payload.get("slug"):
+        payload["slug"] = f"{payload['slug']}-{src_hash}"
 
-    logger.info("    ✓ Payload built — title: %s", payload.get("title", "???"))
+    # ── STEP 5: Agentic Relational Mapping ─────
+    logger.info("\n🧠 Step 5: Agentic Relational Mapping (Call 2)...")
+    mapping_prompt = RELATIONAL_MAPPING_PROMPT(payload, masters)
+    mapped_json_raw = call_gemini(mapping_prompt, system="You are a strict data mapper. Output ONLY JSON.")
+    mapped_json_str = strip_fences(mapped_json_raw, "json")
 
-    # ── STEP 5b: Validate payload ──────────────────
+    (debug_dir / "5_mapped_relations.json").write_text(mapped_json_str, encoding="utf-8")
+
+    try:
+        mapped_data = json.loads(mapped_json_str)
+    except Exception as e:
+        logger.error("    ❌ Gemini mapping failed to output valid JSON. Proceeding with nulls.")
+        mapped_data = {"department_id": None, "state_id": None, "sector_id": None, "eligibility_criteria": [], "unmapped_qualifications": []}
+
+    # Merge mapped IDs into the final payload
+    payload["department_id"] = mapped_data.get("department_id")
+    payload["state_id"] = mapped_data.get("state_id")
+    payload["sector_id"] = mapped_data.get("sector_id")
+    payload["eligibility_criteria"] = mapped_data.get("eligibility_criteria", [])
+
+    # ── STEP 5a: Surface unmapped qualifications ───
+    # These are degrees/specializations/functional areas/qualification levels the
+    # AI found in the source text but couldn't match to an existing master table
+    # row. It always outputs null for the ID rather than guessing — this just
+    # makes the gap visible so you can add the value to the DB and re-map later.
+    unmapped = mapped_data.get("unmapped_qualifications", [])
+    if unmapped:
+        logger.warning("    ⚠  %d qualification(s) couldn't be mapped to existing master table rows:", len(unmapped))
+        for u in unmapped:
+            logger.warning(
+                "       • [%s] \"%s\" (group %s) — %s",
+                u.get("field"), u.get("raw_text"), u.get("group_id"), u.get("context", "")
+            )
+
+        (debug_dir / "unmapped_qualifications.json").write_text(
+            json.dumps(unmapped, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+
+        cumulative_log = out / "unmapped_qualifications_log.jsonl"
+        with open(cumulative_log, "a", encoding="utf-8") as f:
+            for u in unmapped:
+                f.write(json.dumps({
+                    "job_title": payload.get("title"),
+                    "job_slug": payload.get("slug"),
+                    "timestamp": timestamp,
+                    **u,
+                }, ensure_ascii=False) + "\n")
+        logger.info(
+            "    → Logged to %s (cumulative across all runs) and %s",
+            cumulative_log, debug_dir / "unmapped_qualifications.json"
+        )
+    else:
+        logger.info("    ✓ All qualifications mapped cleanly — nothing missing from master tables")
+
+    # Clean up temporary raw text fields from base JSON before saving
+    keys_to_remove = ["raw_post_names", "raw_department_text", "raw_sector_text", "raw_state_text", "raw_eligibility_text"]
+    for key in keys_to_remove:
+        payload.pop(key, None)
+
+    # ── STEP 5b: Validate payload ──────────────
     logger.info("\n🔍 Step 5b: Validating payload...")
     validate_payload(payload)
 
-    # ── SAVE OUTPUTS ───────────────────────────────
-    html_file = out / f"description_{timestamp}.html"
+    # ── SAVE OUTPUTS ───────────────────────────
     json_file = out / f"payload_{timestamp}.json"
-
-    html_file.write_text(generated_html, encoding="utf-8")
     json_file.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    logger.info("\n✅ JSON Payload Ready   → %s", json_file)
 
-    logger.info("\n✅ Outputs saved:")
-    logger.info("   HTML   → %s", html_file)
-    logger.info("   JSON   → %s", json_file)
-    logger.info("   Debug  → %s/", debug_dir)
-
-    # ── STEP 6: Publish ────────────────────────────
+    # ── STEP 6: Publish ────────────────────────
     if not publish:
-        logger.info(
-            "\n⚡ Dry run — outputs saved for review. Add --publish to push to Supabase."
-        )
+        logger.info("⚡ Dry run complete. Review JSON before publishing.")
     else:
         if not SUPABASE_URL or not SUPABASE_KEY:
-            logger.warning(
-                "\n⚠  Supabase not configured — skipping publish. Set SUPABASE_URL and SUPABASE_KEY."
-            )
+            logger.warning("\n⚠  Supabase not configured — skipping publish. Set SUPABASE_URL and SUPABASE_KEY.")
+        elif check_duplicate(src_hash) and not force:
+            logger.warning("    ⚠  Duplicate detected — skipping publish. Use --force to override.")
         else:
-            # Idempotency check before publishing
-            if check_duplicate(src_hash):
-                logger.warning(
-                    "    ⚠  Duplicate detected — skipping publish. Use --force to override."
-                )
-            else:
-                logger.info("\n🚀 Step 6: Publishing to Supabase...")
-                result = publish_job(dict(payload))
-                logger.info(
-                    "    ✓ Posted! ID: %s · Slug: %s",
-                    result.get("id"), payload.get("slug")
-                )
+            logger.info("\n🚀 Step 6: Publishing to Supabase...")
+            result = publish_job(dict(payload))
+            logger.info("    ✓ Posted! Job ID: %s · Slug: %s", result.get("id"), payload.get("slug"))
 
     return payload
 
-def revalidate_necareerhub(state: str, qualification: str):
-    url = "https://necareerhub.in/api/revalidate"
-    secret = os.environ["REVALIDATE_SECRET"]
-    
-    paths = [
-        f"/{state}/govt-jobs",
-        f"/{state}/govt-jobs/{qualification}",
-        "/",
-    ]
-    
-    for path in paths:
-        requests.post(url, json={"path": path, "secret": secret})
-
-
-
-# ─────────────────────────────────────────────
-#  CLI
-# ─────────────────────────────────────────────
 def parse_links(raw: list) -> list:
     """
     Accept links as 'Label::https://url' strings from CLI.
@@ -733,41 +841,41 @@ def parse_links(raw: list) -> list:
     return out
 
 def main():
-    global OPENROUTER_MODEL
     parser = argparse.ArgumentParser(
-        description="NE Career Hub — Job Automation Pipeline (DeepSeek + pdfplumber)",
+        description="NE Career Hub — Job Automation Pipeline v2 (PDF/URL → new relational schema)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=textwrap.dedent("""
         Examples:
           # From PDF — dry run by default (safe, saves files for review)
-          python job_automation.py --pdf notification.pdf
+          python job_automation_v2.py --pdf notification.pdf
 
           # From URL, preview outputs before publishing
-          python job_automation.py --url https://upsc.gov.in/notice \\
+          python job_automation_v2.py --url https://upsc.gov.in/notice \\
             --link "Official Notice::https://upsc.gov.in/notice.pdf" \\
             --link "Apply Online::https://upsconline.nic.in/apply"
 
           # From PDF — actually publish to Supabase
-          python job_automation.py --pdf notification.pdf --publish
+          python job_automation_v2.py --pdf notification.pdf --publish
 
-          # Override keys inline
-          OPENROUTER_API_KEY=sk-xxx SUPABASE_URL=https://xxx.supabase.co \\
-          SUPABASE_KEY=eyJ... python job_automation.py --pdf file.pdf --publish
+          # Force-publish even if a duplicate content-hash is detected
+          python job_automation_v2.py --pdf notification.pdf --publish --force
+
+          # Skip AI steps entirely and publish an existing payload JSON directly
+          python job_automation_v2.py --from-json payload_20260101_120000.json
         """)
     )
     parser.add_argument("--pdf", action="append", help="Path to notification PDF (repeatable)")
-    parser.add_argument("--url",     help="URL of job notification page")
-    parser.add_argument("--link",    action="append", metavar="LABEL::URL",
+    parser.add_argument("--url", help="URL of job notification page")
+    parser.add_argument("--link", action="append", metavar="LABEL::URL",
                         help="Link to include (repeatable). Format: 'Label::https://...'")
-    parser.add_argument("--out",     default=".", help="Output directory (default: current dir)")
+    parser.add_argument("--out", default=".", help="Output directory (default: current dir)")
     parser.add_argument("--publish", action="store_true",
                         help="Publish to Supabase (default: dry run — outputs saved for review)")
-    parser.add_argument("--force",   action="store_true",
+    parser.add_argument("--force", action="store_true",
                         help="Skip duplicate check and publish anyway")
-    parser.add_argument("--model",   default=OPENROUTER_MODEL,
-                        help=f"OpenRouter model (default: {OPENROUTER_MODEL})")
-    parser.add_argument("--from-json", metavar="FILE", help="Skip AI steps and publish an existing payload JSON directly")
-    
+    parser.add_argument("--from-json", metavar="FILE",
+                        help="Skip AI steps and publish an existing payload JSON directly")
+
     args = parser.parse_args()
 
     if args.from_json:
@@ -775,10 +883,9 @@ def main():
             payload = json.load(f)
         validate_payload(payload)
         result = publish_job(payload)
-        logger.info("✓ Published! ID: %s · Slug: %s", result.get("id"), payload.get("slug"))
+        logger.info("✓ Published! ID: %s", result.get("id"))
         return
 
-    OPENROUTER_MODEL = args.model
     links = parse_links(args.link)
 
     try:
@@ -787,11 +894,12 @@ def main():
             source_url=args.url,
             links=links,
             publish=args.publish,
+            force=args.force,
             output_dir=args.out,
         )
     except Exception as e:
         logger.error("\n❌ Pipeline failed: %s", e)
-        raise SystemExit(1)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
